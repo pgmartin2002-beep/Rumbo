@@ -1,0 +1,21 @@
+# JetBrains IDEs (IntelliJ, PyCharm, WebStorm, Rider, etc.)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+bin/
+obj/
+
+# Visual Studio Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
