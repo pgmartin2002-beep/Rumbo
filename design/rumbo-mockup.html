@@ -209,6 +209,316 @@
   .legend{display:flex;gap:16px;justify-content:center;margin-top:26px;flex-wrap:wrap;}
   .legend .item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
   .legend .dot{width:9px;height:9px;border-radius:50%;}
+
+  /* --- Estados nuevos: FR-020, FR-015, fuente ilegible, aparcamiento, atribución Google Maps --- */
+
+  .state-toggle{display:flex;gap:6px;margin-bottom:14px;}
+  .state-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:0.5px;
+    padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer;
+  }
+  .state-btn.on{background:var(--ink);color:#f1efe4;border-color:var(--ink);}
+
+  /* FR-020: hueco de desplazamiento insuficiente */
+  .gap-warning{
+    display:flex;align-items:center;gap:7px;
+    background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:10px;
+    padding:8px 12px;font-size:11.5px;color:var(--amber-tx);margin:-2px 0 12px;line-height:1.4;
+  }
+  .gap-warning svg{width:14px;height:14px;stroke:var(--amber-tx);flex-shrink:0;}
+  .pass.gap-affected .pass-bottom{opacity:0.92;}
+  .stamp.amber.dim{background:transparent;border:1.5px solid var(--amber-line);}
+
+  /* FR-015: confirmación de recálculo de agenda */
+  .agenda-diff-card{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:13px;
+    padding:14px;margin-bottom:14px;
+  }
+  .agenda-diff-card .diff-head{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+  .agenda-diff-card .diff-head svg{width:16px;height:16px;stroke:var(--ink);flex-shrink:0;}
+  .agenda-diff-card .diff-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;}
+  .agenda-diff-card .diff-sub{font-size:11.5px;color:var(--muted);margin:-6px 0 10px;line-height:1.45;}
+  .diff-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:6px 0;border-bottom:1px solid var(--line);}
+  .diff-row:last-of-type{border-bottom:none;}
+  .diff-row .name{font-weight:500;}
+  .diff-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:0.3px;}
+  .diff-tag.up{background:var(--teal-bg);color:var(--teal-tx);}
+  .diff-tag.down{background:var(--plum-bg);color:var(--plum-tx);}
+  .diff-tag.new{background:var(--amber-bg);color:var(--amber-tx);}
+  .diff-actions{display:flex;gap:8px;margin-top:12px;}
+  .diff-btn{
+    flex:1;padding:9px 0;border-radius:8px;font-family:'IBM Plex Sans',sans-serif;
+    font-weight:500;font-size:12px;cursor:pointer;text-align:center;border:1px solid var(--ink);
+  }
+  .diff-btn.apply{background:var(--ink);color:#f1efe4;}
+  .diff-btn.keep{background:transparent;color:var(--ink);}
+  .diff-trigger{
+    font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;color:var(--muted);text-decoration:underline;
+    background:none;border:none;cursor:pointer;padding:0 0 12px;text-align:left;
+  }
+
+  /* Fuente ilegible (Historia 1) */
+  .illegible-card{
+    background:var(--card);border:1px dashed var(--amber-line);border-radius:14px;
+    padding:18px 16px;margin-top:auto;text-align:center;
+  }
+  .illegible-card svg{width:26px;height:26px;stroke:var(--amber-tx);margin-bottom:8px;}
+  .illegible-card .il-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;margin-bottom:4px;}
+  .illegible-card .il-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+  .il-actions{display:flex;flex-direction:column;gap:8px;}
+  .il-btn{padding:10px;border-radius:9px;font-family:'IBM Plex Sans',sans-serif;font-weight:500;font-size:12.5px;cursor:pointer;border:1px solid var(--ink);}
+  .il-btn.primary{background:var(--ink);color:#f1efe4;}
+  .il-btn.secondary{background:transparent;color:var(--ink);}
+
+  /* Aparcamiento (FR-019) */
+  .parking-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:14px;}
+  .parking-card .pk-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12.5px;margin-bottom:8px;}
+  .pk-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:12px;}
+  .pk-row:last-of-type{border-bottom:none;}
+  .pk-row .pk-name{font-weight:500;}
+  .pk-row .pk-meta{color:var(--muted);font-size:11px;}
+  .pk-row .pk-dist{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+
+  /* Atribución de proveedor de datos (FR-021 · Google Maps) */
+  .data-attr{font-size:10px;color:var(--muted);text-align:right;margin-top:8px;}
+
+  /* =====================================================================
+     Spec 002 — Preparar interacciones y vivir el evento
+     Pantallas 5-8: Preguntas · Ahora · Notas · Personas
+     ===================================================================== */
+
+  /* --- Pantalla 5: Preguntas --- */
+  .qa-context{
+    display:flex;align-items:center;gap:10px;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:10px 12px;margin-bottom:18px;
+  }
+  .qa-context .qc-time{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+  .qa-context .qc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;}
+
+  .qa-group-label{font-family:'IBM Plex Mono',monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin:0 0 8px;}
+  .qa-row{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--card);border:1px solid var(--line);border-radius:11px;
+    padding:11px 12px;margin-bottom:8px;
+  }
+  .qa-tag{
+    flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:0.4px;
+    padding:3px 7px;border-radius:5px;margin-top:1px;
+  }
+  .qa-tag.general{background:var(--teal-bg);color:var(--teal-tx);}
+  .qa-tag.tecnica{background:var(--plum-bg);color:var(--plum-tx);}
+  .qa-tag.tuya{background:var(--amber-bg);color:var(--amber-tx);}
+  .qa-text{font-size:12.5px;line-height:1.45;flex:1;}
+
+  .regen-row{display:flex;justify-content:flex-end;margin:2px 0 18px;}
+  .regen-btn{
+    display:flex;align-items:center;gap:6px;
+    background:transparent;border:1px solid var(--line);border-radius:8px;
+    padding:7px 11px;font-family:'IBM Plex Sans',sans-serif;font-size:11.5px;font-weight:500;color:var(--ink);cursor:pointer;
+  }
+  .regen-btn svg{width:12px;height:12px;stroke:var(--ink);}
+  .regen-btn.spinning svg{animation:spin 0.6s linear;}
+  @keyframes spin{to{transform:rotate(180deg);}}
+
+  .add-question-row{
+    display:flex;gap:8px;margin-top:auto;padding-top:14px;
+  }
+  .add-question-row input{
+    flex:1;border:1px solid var(--line);background:var(--card);border-radius:9px;
+    padding:11px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:var(--text);outline:none;
+  }
+  .add-question-row input::placeholder{color:var(--muted);}
+  .add-question-btn{
+    width:38px;height:38px;border-radius:9px;border:none;background:var(--ink);color:#f1efe4;
+    font-size:17px;line-height:1;cursor:pointer;flex-shrink:0;
+  }
+
+  .qa-empty{
+    background:var(--card);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 16px;text-align:center;margin-bottom:14px;
+  }
+  .qa-empty svg{width:24px;height:24px;stroke:var(--muted);margin-bottom:8px;}
+  .qa-empty .qe-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;margin-bottom:4px;}
+  .qa-empty .qe-sub{font-size:11.5px;color:var(--muted);line-height:1.5;}
+
+  /* --- Pantalla 6: Ahora --- */
+  .now-pill{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.8px;
+    padding:5px 10px;border-radius:20px;margin-bottom:14px;
+  }
+  .now-pill.on{background:var(--teal-bg);color:var(--teal-tx);}
+  .now-pill.gap{background:var(--amber-bg);color:var(--amber-tx);}
+  .now-pill.off{background:var(--line);color:var(--muted);}
+  .now-pill .dot-live{width:6px;height:6px;border-radius:50%;background:currentColor;}
+
+  .now-board{
+    background:var(--ink);color:#f1efe4;border-radius:16px;
+    padding:22px 18px;margin-bottom:16px;
+  }
+  .now-board .nb-time{font-family:'IBM Plex Mono',monospace;font-size:11.5px;opacity:0.7;margin-bottom:6px;}
+  .now-board .nb-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:21px;line-height:1.25;margin-bottom:8px;}
+  .now-board .nb-room{font-size:13px;opacity:0.85;display:flex;align-items:center;gap:6px;}
+  .now-board .nb-room svg{width:14px;height:14px;stroke:#f1efe4;opacity:0.85;}
+
+  .next-up-card{
+    background:var(--card);border:1px solid var(--line);border-radius:13px;
+    padding:14px;margin-bottom:16px;
+  }
+  .next-up-card .nu-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:6px;}
+  .next-up-card .nu-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14.5px;margin-bottom:2px;}
+  .next-up-card .nu-meta{font-size:11.5px;color:var(--muted);}
+
+  .quick-actions{display:flex;gap:8px;margin-bottom:16px;}
+  .qa-action{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 8px;cursor:pointer;
+  }
+  .qa-action svg{width:18px;height:18px;stroke:var(--ink);}
+  .qa-action span{font-size:11.5px;font-weight:500;}
+
+  .off-hours-card{
+    background:var(--card);border:1px dashed var(--line);border-radius:14px;
+    padding:20px 16px;text-align:center;margin-bottom:16px;
+  }
+  .off-hours-card svg{width:22px;height:22px;stroke:var(--muted);margin-bottom:8px;}
+  .off-hours-card .oh-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13.5px;margin-bottom:4px;}
+  .off-hours-card .oh-sub{font-size:11.5px;color:var(--muted);line-height:1.5;}
+
+  /* --- Pantalla 7: Notas --- */
+  .note-card{
+    background:var(--card);border:1px solid var(--line);border-radius:13px;
+    padding:13px 14px;margin-bottom:10px;
+  }
+  .note-card .nc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;gap:8px;}
+  .note-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:0.4px;
+    padding:3px 7px;border-radius:5px;background:var(--teal-bg);color:var(--teal-tx);flex-shrink:0;
+  }
+  .note-tag.general{background:var(--line);color:var(--muted);}
+  .note-card .nc-time{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .note-card .nc-body{font-size:12.5px;line-height:1.5;}
+  .note-card .nc-voice{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);margin-top:6px;}
+  .note-card .nc-voice svg{width:11px;height:11px;stroke:var(--muted);}
+
+  .compose-bar{
+    margin-top:auto;padding-top:12px;display:flex;gap:8px;align-items:center;
+  }
+  .compose-bar input{
+    flex:1;border:1px solid var(--line);background:var(--card);border-radius:22px;
+    padding:12px 16px;font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:var(--text);outline:none;
+  }
+  .compose-bar input::placeholder{color:var(--muted);}
+  .mic-btn{
+    width:42px;height:42px;border-radius:50%;border:none;background:var(--ink);color:#f1efe4;
+    display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;
+  }
+  .mic-btn svg{width:17px;height:17px;stroke:#f1efe4;}
+  .mic-btn.recording{background:var(--plum-line);}
+
+  .recording-banner{
+    display:flex;align-items:center;gap:8px;
+    background:var(--plum-bg);color:var(--plum-tx);border-radius:22px;
+    padding:11px 16px;margin-top:auto;
+  }
+  .recording-banner .rb-dot{width:8px;height:8px;border-radius:50%;background:var(--plum-tx);animation:pulse 1s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.35;}}
+  .recording-banner span{font-size:12px;font-weight:500;flex:1;}
+  .recording-banner b{font-family:'IBM Plex Mono',monospace;font-size:11.5px;}
+
+  /* --- Pantalla 8: Personas --- */
+  .contact-card{
+    background:var(--card);border:1px solid var(--line);border-radius:13px;
+    padding:13px 14px;margin-bottom:10px;
+  }
+  .contact-card .cc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+  .contact-card .cc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;}
+  .contact-card .cc-note{font-size:12px;color:var(--text);line-height:1.5;margin-bottom:6px;}
+  .contact-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);
+    display:flex;align-items:center;gap:5px;
+  }
+  .contact-tag svg{width:11px;height:11px;stroke:var(--muted);}
+
+  .add-contact-card{
+    background:var(--card);border:1.5px solid var(--ink);border-radius:13px;
+    padding:14px;margin-top:auto;
+  }
+  .add-contact-card .ac-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;margin-bottom:10px;}
+  .add-contact-card input{
+    width:100%;border:1px solid var(--line);background:var(--paper);border-radius:9px;
+    padding:10px 12px;font-family:'IBM Plex Sans',sans-serif;font-size:12.5px;color:var(--text);outline:none;margin-bottom:8px;
+  }
+  .add-contact-card input::placeholder{color:var(--muted);}
+  .add-contact-card .cta-btn{margin-top:2px;}
+
+  .dup-warning{
+    background:var(--amber-bg);border:1px solid var(--amber-line);border-radius:12px;
+    padding:12px 14px;margin-bottom:14px;
+  }
+  .dup-warning .dw-top{display:flex;gap:9px;align-items:flex-start;margin-bottom:10px;}
+  .dup-warning svg{width:15px;height:15px;stroke:var(--amber-tx);flex-shrink:0;margin-top:2px;}
+  .dup-warning .dw-text{font-size:12px;color:var(--amber-tx);line-height:1.5;}
+  .dup-warning .dw-text b{display:block;font-size:12.5px;margin-bottom:2px;}
+  .dup-actions{display:flex;gap:8px;}
+  .dup-btn{
+    flex:1;padding:8px 0;border-radius:8px;font-family:'IBM Plex Sans',sans-serif;
+    font-weight:500;font-size:11.5px;cursor:pointer;text-align:center;border:1px solid var(--amber-line);
+  }
+  .dup-btn.merge{background:var(--amber-tx);color:var(--amber-bg);border-color:var(--amber-tx);}
+  .dup-btn.separate{background:transparent;color:var(--amber-tx);}
+
+  /* =====================================================================
+     Pantalla 0 — Home / Mis eventos (billetera de tarjetas de embarque)
+     ===================================================================== */
+  .home-add{
+    display:flex;align-items:center;gap:12px;
+    background:transparent;border:1.5px dashed var(--line);border-radius:14px;
+    padding:14px 15px;margin-bottom:14px;cursor:pointer;
+  }
+  .home-add .ha-ic{
+    width:34px;height:34px;border-radius:9px;background:var(--ink);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .home-add .ha-ic svg{width:16px;height:16px;stroke:var(--paper);}
+  .home-add .ha-t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;}
+  .home-add .ha-s{font-size:11px;color:var(--muted);}
+
+  .event-pass{
+    background:var(--card);border:1px solid var(--line);border-radius:13px;
+    margin-bottom:12px;overflow:hidden;cursor:pointer;
+  }
+  .event-pass .ep-top{padding:13px 14px 10px;}
+  .ep-status-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+  .ep-live-dot{width:7px;height:7px;border-radius:50%;background:var(--teal-line);animation:pulse 1.2s infinite;}
+  .ep-status-row .ep-status{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.6px;color:var(--teal-tx);}
+  .ep-status-row.upcoming .ep-status{color:var(--muted);}
+  .ep-status-row.closed .ep-status{color:var(--muted);}
+  .ep-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15.5px;margin-bottom:3px;}
+  .ep-meta{font-size:11.5px;color:var(--muted);}
+  .event-pass .perf{margin:0;}
+  .ep-bottom{padding:10px 14px 12px;}
+  .ep-checklist{display:flex;flex-direction:column;gap:5px;}
+  .ep-check-row{display:flex;align-items:center;gap:7px;font-size:11.5px;}
+  .ep-check-row .cdot{width:14px;height:14px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .ep-check-row.done .cdot{background:var(--teal-line);}
+  .ep-check-row.done .cdot svg{width:8px;height:8px;stroke:#fff;}
+  .ep-check-row.pending .cdot{border:1.5px solid var(--line);}
+  .ep-check-row.done span{color:var(--text);}
+  .ep-check-row.pending span{color:var(--muted);}
+  .ep-summary{font-size:11.5px;color:var(--muted);line-height:1.5;}
+  .ep-summary b{color:var(--text);font-weight:500;}
+
+  .home-empty{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;flex:1;padding:20px 12px;
+  }
+  .home-empty .he-ic{width:56px;height:56px;border-radius:16px;background:var(--ink);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+  .home-empty .he-ic svg{width:26px;height:26px;stroke:var(--paper);}
+  .home-empty .he-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;margin-bottom:6px;}
+  .home-empty .he-sub{font-size:12px;color:var(--muted);line-height:1.55;max-width:230px;margin-bottom:20px;}
+  .home-empty .cta-btn{width:auto;padding:12px 22px;}
 </style>
 </head>
 <body>
@@ -222,18 +532,94 @@
   </div>
 
   <div class="tabs">
-    <button class="tab active" data-target="s1"><span class="num">01</span>Importar</button>
+    <button class="tab active" data-target="s0"><span class="num">00</span>Mis eventos</button>
+    <button class="tab" data-target="s1"><span class="num">01</span>Importar</button>
     <button class="tab" data-target="s2"><span class="num">02</span>Objetivos</button>
     <button class="tab" data-target="s3"><span class="num">03</span>Agenda</button>
     <button class="tab" data-target="s4"><span class="num">04</span>Logística</button>
+    <button class="tab" data-target="s5"><span class="num">05</span>Preguntas</button>
+    <button class="tab" data-target="s6"><span class="num">06</span>Ahora</button>
+    <button class="tab" data-target="s7"><span class="num">07</span>Notas</button>
+    <button class="tab" data-target="s8"><span class="num">08</span>Personas</button>
   </div>
 
   <div class="device-wrap">
     <div class="device">
       <div class="notch"></div>
 
+      <!-- SCREEN 0: MIS EVENTOS (HOME) -->
+      <div class="screen-frame active" id="s0">
+        <div class="crumb">Hola, Marcos</div>
+        <h1 class="screen-title">Tus eventos</h1>
+        <p class="screen-sub">Cada evento guarda su propia agenda, objetivos y contactos.</p>
+
+        <div class="state-toggle" id="s0-toggle">
+          <button class="state-btn on" data-state="withevents">Con eventos</button>
+          <button class="state-btn" data-state="empty">Usuario nuevo</button>
+        </div>
+
+        <div id="s0-withevents">
+          <div class="home-add" data-target="s1">
+            <div class="ha-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></div>
+            <div>
+              <div class="ha-t">Trae tu próximo evento</div>
+              <div class="ha-s">URL, PDF, QR, calendario o búsqueda</div>
+            </div>
+          </div>
+
+          <div class="event-pass" data-target="s6">
+            <div class="ep-top">
+              <div class="ep-status-row"><span class="ep-live-dot"></span><span class="ep-status">En curso · hoy</span></div>
+              <div class="ep-name">Techdays Madrid 2026</div>
+              <div class="ep-meta">14–15 oct · IFEMA, Madrid</div>
+            </div>
+            <div class="perf"></div>
+            <div class="ep-bottom">
+              <div class="ep-summary"><b>3 objetivos</b> · agenda con 12 sesiones · toca "IA aplicada a producto" ahora</div>
+            </div>
+          </div>
+
+          <div class="event-pass" data-target="s2">
+            <div class="ep-top">
+              <div class="ep-status-row upcoming"><span class="ep-status">Próximo · en 3 semanas</span></div>
+              <div class="ep-name">SaaS Growth Summit</div>
+              <div class="ep-meta">18 nov · Barcelona</div>
+            </div>
+            <div class="perf"></div>
+            <div class="ep-bottom">
+              <div class="ep-checklist">
+                <div class="ep-check-row done"><div class="cdot"><svg viewBox="0 0 24 24" fill="none" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div><span>Evento importado</span></div>
+                <div class="ep-check-row pending"><div class="cdot"></div><span>Definir objetivos</span></div>
+                <div class="ep-check-row pending"><div class="cdot"></div><span>Generar agenda</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="event-pass" data-target="s5">
+            <div class="ep-top">
+              <div class="ep-status-row closed"><span class="ep-status">Cerrado · hace 2 semanas</span></div>
+              <div class="ep-name">Fintech Meetup Valencia</div>
+              <div class="ep-meta">10 jul · Valencia</div>
+            </div>
+            <div class="perf"></div>
+            <div class="ep-bottom">
+              <div class="ep-summary">7 notas · 4 contactos · 2 follow-ups enviados</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="s0-empty" style="display:none;flex-direction:column;flex:1;">
+          <div class="home-empty">
+            <div class="he-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 12l7-9v5h11l-7 9v-5H3z"/></svg></div>
+            <div class="he-title">Todavía no tienes eventos</div>
+            <div class="he-sub">Trae el primero desde una URL, un PDF, un QR o buscándolo, y Rumbo se encarga de lo demás.</div>
+            <button class="cta-btn" data-target="s1">Trae tu primer evento →</button>
+          </div>
+        </div>
+      </div>
+
       <!-- SCREEN 1: IMPORTAR -->
-      <div class="screen-frame active" id="s1">
+      <div class="screen-frame" id="s1">
         <div class="crumb">Nuevo evento</div>
         <h1 class="screen-title">Trae tu evento, como lo tengas a mano.</h1>
         <p class="screen-sub">Pega un enlace, sube un PDF, escanea un QR o búscalo. Rumbo se encarga de sacar fechas, sesiones y ponentes.</p>
@@ -266,13 +652,28 @@
           <div class="chev">›</div>
         </div>
 
-        <div class="preview-card">
+        <div class="state-toggle" id="s1-toggle">
+          <button class="state-btn on" data-state="ok">Vista previa</button>
+          <button class="state-btn" data-state="bad">Fuente ilegible</button>
+        </div>
+
+        <div class="preview-card" id="s1-ok">
           <div class="ev-name">TechDays Madrid 2026</div>
           <div class="field-row"><span class="k">Fechas</span><span class="v">14–15 oct 2026</span></div>
           <div class="field-row"><span class="k">Ubicación</span><span class="v">IFEMA, Madrid</span></div>
           <div class="field-row"><span class="k">Sesiones</span><span class="v">38 detectadas</span></div>
           <div class="field-row"><span class="k">Ponentes</span><span class="v missing">Falta esta información</span></div>
           <button class="fix-btn">Completar a mano</button>
+        </div>
+
+        <div class="illegible-card" id="s1-bad" style="display:none;">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 9v4M12 17h.01M10.3 3.9L2.5 18a1 1 0 00.9 1.5h17.2a1 1 0 00.9-1.5L13.7 3.9a1 1 0 00-1.4 0z"/></svg>
+          <div class="il-title">No hemos podido leer esta fuente</div>
+          <div class="il-sub">La imagen o el enlace no parecen corresponder a un evento, o la calidad no permite extraer datos. Puedes reintentar con otra fuente o introducir el evento a mano.</div>
+          <div class="il-actions">
+            <button class="il-btn primary">Probar con otra fuente</button>
+            <button class="il-btn secondary">Introducir a mano</button>
+          </div>
         </div>
       </div>
 
@@ -305,6 +706,23 @@
         <div class="day-tabs">
           <div class="day-tab on">Día 1 · 14 oct</div>
           <div class="day-tab">Día 2 · 15 oct</div>
+        </div>
+
+        <button class="diff-trigger" id="diff-trigger">Cambié mis objetivos → ver agenda recalculada</button>
+
+        <div class="agenda-diff-card" id="agenda-diff" style="display:none;">
+          <div class="diff-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>
+            <div class="diff-title">Nueva agenda disponible</div>
+          </div>
+          <div class="diff-sub">Añadiste "Conocer inversores" a tus objetivos. Esto cambia 2 sesiones — revísalo antes de sustituir tu agenda actual.</div>
+          <div class="diff-row"><span class="name">Financiación seed en 2026</span><span class="diff-tag up">Sube a imprescindible</span></div>
+          <div class="diff-row"><span class="name">Café con fundadores</span><span class="diff-tag down">Baja a opcional</span></div>
+          <div class="diff-row"><span class="name">Mesa redonda: Business Angels</span><span class="diff-tag new">Nueva imprescindible</span></div>
+          <div class="diff-actions">
+            <div class="diff-btn apply" id="diff-apply">Aplicar nueva agenda</div>
+            <div class="diff-btn keep" id="diff-keep">Mantener la actual</div>
+          </div>
         </div>
 
         <div class="pass">
@@ -346,6 +764,23 @@
             <span class="pass-reason">Útil para networking, sin conflicto</span>
           </div>
         </div>
+
+        <div class="gap-warning">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Solo 4 min hasta Sala D — puede que no llegues a tiempo (mapa del recinto)
+        </div>
+        <div class="pass gap-affected">
+          <div class="pass-top">
+            <div class="pass-time">13:05 – 13:35 · Sala D</div>
+            <div class="pass-name">Escalar equipos técnicos</div>
+            <div class="pass-room">Iker Zabala · Northbound</div>
+          </div>
+          <div class="perf"></div>
+          <div class="pass-bottom">
+            <span class="stamp amber dim">Opcional</span>
+            <span class="pass-reason">Se mantiene visible aunque el hueco sea justo</span>
+          </div>
+        </div>
       </div>
 
       <!-- SCREEN 4: LOGISTICA -->
@@ -356,12 +791,19 @@
         <div class="route-card">
           <div class="route-line">Hotel Riu Plaza <span class="arrow">→</span> IFEMA Madrid</div>
           <div class="route-sub">4.2 km · llegada estimada 09:50</div>
+          <div class="data-attr">Rutas y tráfico: Google Maps</div>
         </div>
 
         <div class="segmented">
-          <div class="seg on">Transporte público</div>
-          <div class="seg">Coche</div>
-          <div class="seg">Andando</div>
+          <div class="seg on" data-mode="public">Transporte público</div>
+          <div class="seg" data-mode="car">Coche</div>
+          <div class="seg" data-mode="walk">Andando</div>
+        </div>
+
+        <div class="parking-card" id="parking-card" style="display:none;">
+          <div class="pk-title">Aparcamiento cerca de IFEMA</div>
+          <div class="pk-row"><div><div class="pk-name">P. Feria de Madrid — Norte</div><div class="pk-meta">Abierto 24h · 2,10 €/h</div></div><div class="pk-dist">3 min a pie</div></div>
+          <div class="pk-row"><div><div class="pk-name">Parking Campo de las Naciones</div><div class="pk-meta">Plazas libres ahora</div></div><div class="pk-dist">6 min a pie</div></div>
         </div>
 
         <div class="depart-block">
@@ -379,6 +821,191 @@
             <div class="alert-btn confirm">Confirmar nueva salida</div>
             <div class="alert-btn keep">Mantener la mía</div>
           </div>
+          <div class="data-attr">Tráfico en tiempo real: Google Maps</div>
+        </div>
+      </div>
+
+      <!-- SCREEN 5: PREGUNTAS -->
+      <div class="screen-frame" id="s5">
+        <div class="crumb">Preparar interacciones</div>
+        <h1 class="screen-title">Llega con algo que decir.</h1>
+        <p class="screen-sub">Preguntas generales y técnicas para esta sesión. Añade las tuyas cuando quieras.</p>
+
+        <div class="qa-context">
+          <div class="qc-time">10:00</div>
+          <div class="qc-name">IA aplicada a producto · Marta Roig</div>
+        </div>
+
+        <div class="state-toggle" id="s5-toggle">
+          <button class="state-btn on" data-state="ok">Con preguntas</button>
+          <button class="state-btn" data-state="empty">Info insuficiente</button>
+        </div>
+
+        <div id="s5-ok">
+          <div class="qa-group-label">Generales</div>
+          <div class="qa-row"><span class="qa-tag general">General</span><span class="qa-text">¿Qué te llevó a especializarte en IA aplicada a producto en vez de en investigación pura?</span></div>
+          <div class="qa-row"><span class="qa-tag general">General</span><span class="qa-text">¿Cuál dirías que es el mayor malentendido de los equipos de producto sobre la IA hoy?</span></div>
+
+          <div class="qa-group-label" style="margin-top:14px;">Técnicas</div>
+          <div class="qa-row"><span class="qa-tag tecnica">Técnica</span><span class="qa-text">¿Qué métricas usáis para decidir si una feature con IA está lista para producción?</span></div>
+          <div class="qa-row"><span class="qa-tag tecnica">Técnica</span><span class="qa-text">¿Cómo gestionáis el coste de inferencia cuando el uso escala más rápido de lo previsto?</span></div>
+
+          <div class="regen-row">
+            <button class="regen-btn" id="regen-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 12a9 9 0 11-3-6.7M21 4v5h-5"/></svg>
+              Regenerar preguntas
+            </button>
+          </div>
+
+          <div class="qa-group-label">Tuyas</div>
+          <div class="qa-row"><span class="qa-tag tuya">Tuya</span><span class="qa-text">Preguntarle si Vento Labs contrata perfiles de producto sin background técnico.</span></div>
+
+          <div class="add-question-row">
+            <input type="text" placeholder="Añade tu propia pregunta…">
+            <button class="add-question-btn">+</button>
+          </div>
+        </div>
+
+        <div id="s5-empty" style="display:none;">
+          <div class="qa-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+            <div class="qe-title">Sin información suficiente</div>
+            <div class="qe-sub">Esta sesión no tiene tema ni descripción en los datos importados, así que no podemos sugerir preguntas. Escribe las tuyas y las guardamos igual.</div>
+          </div>
+          <div class="add-question-row" style="margin-top:0;">
+            <input type="text" placeholder="Escribe tu propia pregunta…">
+            <button class="add-question-btn">+</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 6: AHORA -->
+      <div class="screen-frame" id="s6">
+        <div class="crumb">Modo simplificado</div>
+        <h1 class="screen-title">¿Qué toca ahora?</h1>
+
+        <div class="state-toggle" id="s6-toggle">
+          <button class="state-btn on" data-state="on">En sesión</button>
+          <button class="state-btn" data-state="gap">En hueco</button>
+          <button class="state-btn" data-state="off">Fuera de horario</button>
+        </div>
+
+        <div id="s6-on">
+          <div class="now-pill on"><span class="dot-live"></span>Ahora mismo</div>
+          <div class="now-board">
+            <div class="nb-time">10:00 – 10:45</div>
+            <div class="nb-name">IA aplicada a producto</div>
+            <div class="nb-room">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+              Sala A
+            </div>
+          </div>
+          <div class="quick-actions">
+            <div class="qa-action"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg><span>Tomar nota</span></div>
+            <div class="qa-action"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M17 8h4M19 6v4"/></svg><span>Registrar contacto</span></div>
+          </div>
+        </div>
+
+        <div id="s6-gap" style="display:none;">
+          <div class="now-pill gap"><span class="dot-live"></span>Hueco libre</div>
+          <div class="next-up-card" style="margin-bottom:16px;">
+            <div class="nu-label">Ahora mismo</div>
+            <div class="nu-name">No tienes nada agendado</div>
+            <div class="nu-meta">Buen momento para tomar notas o buscar a alguien de tu lista</div>
+          </div>
+          <div class="next-up-card">
+            <div class="nu-label">Tu próxima actividad</div>
+            <div class="nu-name">Financiación seed en 2026</div>
+            <div class="nu-meta">11:00 – 11:45 · Sala B</div>
+          </div>
+        </div>
+
+        <div id="s6-off" style="display:none;">
+          <div class="now-pill off"><span class="dot-live"></span>Evento no activo</div>
+          <div class="off-hours-card">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <div class="oh-title">Techdays aún no ha empezado hoy</div>
+            <div class="oh-sub">La jornada arranca a las 09:30. Aquí tienes tu primera actividad del día.</div>
+          </div>
+          <div class="next-up-card">
+            <div class="nu-label">Primera actividad · Día 1</div>
+            <div class="nu-name">IA aplicada a producto</div>
+            <div class="nu-meta">10:00 · Sala A</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SCREEN 7: NOTAS -->
+      <div class="screen-frame" id="s7">
+        <div class="crumb">Techdays Madrid 2026</div>
+        <h1 class="screen-title">Tus notas</h1>
+        <p class="screen-sub">Vinculadas a la sesión activa en el momento de crearlas.</p>
+
+        <div class="note-card">
+          <div class="nc-top"><span class="note-tag">IA aplicada a producto</span><span class="nc-time">10:12</span></div>
+          <div class="nc-body">Marta menciona que miden el ROI de IA por tiempo ahorrado al equipo, no por precisión del modelo. Preguntar detalles después.</div>
+        </div>
+        <div class="note-card">
+          <div class="nc-top"><span class="note-tag">Financiación seed en 2026</span><span class="nc-time">11:20</span></div>
+          <div class="nc-body">El panel coincide en que las rondas seed tardan de media 5 meses en cerrar este año.</div>
+          <div class="nc-voice"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>Transcrita de una nota de voz</div>
+        </div>
+        <div class="note-card">
+          <div class="nc-top"><span class="note-tag general">Evento general</span><span class="nc-time">12:35</span></div>
+          <div class="nc-body">No hay sesión activa ahora — recordar preguntar en recepción por el listado de expositores de la tarde.</div>
+        </div>
+
+        <div class="compose-bar" id="compose-bar">
+          <input type="text" placeholder="Escribe una nota…">
+          <button class="mic-btn" id="mic-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 19v3"/></svg>
+          </button>
+        </div>
+        <div class="recording-banner" id="recording-banner" style="display:none;">
+          <span class="rb-dot"></span>
+          <span>Grabando · vinculada a "IA aplicada a producto"</span>
+          <b>00:07</b>
+        </div>
+      </div>
+
+      <!-- SCREEN 8: PERSONAS -->
+      <div class="screen-frame" id="s8">
+        <div class="crumb">Techdays Madrid 2026</div>
+        <h1 class="screen-title">Personas que has conocido</h1>
+
+        <div class="contact-card">
+          <div class="cc-top"><span class="cc-name">Iker Zabala</span></div>
+          <div class="cc-note">Fundador de Northbound, busca colaborar en el reto de datos. Le prometí enviarle el paper de Marta.</div>
+          <div class="contact-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            Café con fundadores · 12:45
+          </div>
+        </div>
+        <div class="contact-card">
+          <div class="cc-top"><span class="cc-name">Laura Pinto</span></div>
+          <div class="cc-note">Business angel, interesada en el proyecto que voy a presentar mañana.</div>
+          <div class="contact-tag">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 21s7-6.5 7-11a7 7 0 10-14 0c0 4.5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            Mesa redonda: Business Angels · 12:10
+          </div>
+        </div>
+
+        <div class="dup-warning">
+          <div class="dw-top">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 9v4M12 17h.01"/><circle cx="12" cy="12" r="9"/></svg>
+            <div class="dw-text"><b>Posible duplicado</b>Ya tienes un contacto llamado "Iker Zabala" registrado hoy en este evento.</div>
+          </div>
+          <div class="dup-actions">
+            <div class="dup-btn merge">Fusionar</div>
+            <div class="dup-btn separate">Guardar como distinto</div>
+          </div>
+        </div>
+
+        <div class="add-contact-card">
+          <div class="ac-title">Registrar contacto</div>
+          <input type="text" placeholder="Nombre">
+          <input type="text" placeholder="Nota rápida (de qué hablasteis)">
+          <button class="cta-btn">Guardar contacto</button>
         </div>
       </div>
 
@@ -409,8 +1036,44 @@
     seg.addEventListener('click',()=>{
       seg.parentElement.querySelectorAll('.seg').forEach(s=>s.classList.remove('on'));
       seg.classList.add('on');
+      const parking=document.getElementById('parking-card');
+      if(parking) parking.style.display = seg.dataset.mode==='car' ? 'block' : 'none';
     });
   });
+
+  // Fuente ilegible / vista previa (Historia 1)
+  document.querySelectorAll('#s1-toggle .state-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('#s1-toggle .state-btn').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      document.getElementById('s1-ok').style.display = btn.dataset.state==='ok' ? 'block' : 'none';
+      document.getElementById('s1-bad').style.display = btn.dataset.state==='bad' ? 'block' : 'none';
+    });
+  });
+
+  // Confirmación de recálculo de agenda (FR-015)
+  const diffTrigger=document.getElementById('diff-trigger');
+  const diffCard=document.getElementById('agenda-diff');
+  if(diffTrigger){
+    diffTrigger.addEventListener('click',()=>{
+      diffCard.style.display='block';
+      diffTrigger.style.display='none';
+    });
+  }
+  const diffApply=document.getElementById('diff-apply');
+  if(diffApply){
+    diffApply.addEventListener('click',()=>{
+      diffCard.innerHTML='<div class="diff-head"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg><div class="diff-title">Agenda actualizada</div></div><div class="diff-sub">Tu agenda ya refleja tus objetivos actuales.</div>';
+    });
+  }
+  const diffKeep=document.getElementById('diff-keep');
+  if(diffKeep){
+    diffKeep.addEventListener('click',()=>{
+      diffCard.style.display='none';
+      diffTrigger.style.display='block';
+      diffTrigger.textContent='Agenda actual mantenida — volver a intentar';
+    });
+  }
   document.querySelector('.alert-btn.confirm').addEventListener('click',function(){
     document.querySelector('.depart-time').textContent='08:30';
     document.querySelector('.txt').innerHTML='<b>Nueva salida confirmada</b>Se avisará si hay más cambios en el trayecto.';
@@ -419,6 +1082,93 @@
   document.querySelector('.alert-btn.keep').addEventListener('click',function(){
     document.querySelector('.txt').innerHTML='<b>Salida original mantenida</b>08:40. Se avisará si el retraso empeora.';
     this.parentElement.style.display='none';
+  });
+
+  // Pantalla 5 — Preguntas: con preguntas / info insuficiente
+  const s5Toggle=document.getElementById('s5-toggle');
+  if(s5Toggle){
+    s5Toggle.querySelectorAll('.state-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        s5Toggle.querySelectorAll('.state-btn').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        document.getElementById('s5-ok').style.display = btn.dataset.state==='ok' ? 'block' : 'none';
+        document.getElementById('s5-empty').style.display = btn.dataset.state==='empty' ? 'block' : 'none';
+      });
+    });
+  }
+  const regenBtn=document.getElementById('regen-btn');
+  if(regenBtn){
+    regenBtn.addEventListener('click',()=>{
+      regenBtn.classList.add('spinning');
+      setTimeout(()=>regenBtn.classList.remove('spinning'),600);
+    });
+  }
+
+  // Pantalla 6 — Ahora: en sesión / en hueco / fuera de horario
+  const s6Toggle=document.getElementById('s6-toggle');
+  if(s6Toggle){
+    s6Toggle.querySelectorAll('.state-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        s6Toggle.querySelectorAll('.state-btn').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        ['on','gap','off'].forEach(state=>{
+          document.getElementById('s6-'+state).style.display = btn.dataset.state===state ? 'block' : 'none';
+        });
+      });
+    });
+  }
+
+  // Pantalla 7 — Notas: alternar barra de texto / grabación de voz
+  const micBtn=document.getElementById('mic-btn');
+  if(micBtn){
+    micBtn.addEventListener('click',()=>{
+      micBtn.classList.toggle('recording');
+      const recording=micBtn.classList.contains('recording');
+      document.getElementById('compose-bar').style.display = recording ? 'none' : 'flex';
+      document.getElementById('recording-banner').style.display = recording ? 'flex' : 'none';
+    });
+  }
+  const recordingBanner=document.getElementById('recording-banner');
+  if(recordingBanner){
+    recordingBanner.addEventListener('click',()=>{
+      micBtn.classList.remove('recording');
+      document.getElementById('compose-bar').style.display='flex';
+      recordingBanner.style.display='none';
+    });
+  }
+
+  // Pantalla 8 — Personas: resolver aviso de duplicado
+  document.querySelectorAll('.dup-btn').forEach(btn=>{
+    btn.addEventListener('click',function(){
+      const warning=this.closest('.dup-warning');
+      warning.innerHTML = this.classList.contains('merge')
+        ? '<div class="dw-text"><b>Contactos fusionados</b>La nueva nota se añadió al perfil existente de Iker Zabala.</div>'
+        : '<div class="dw-text"><b>Guardado como contacto distinto</b>Ahora tienes dos entradas separadas para "Iker Zabala".</div>';
+    });
+  });
+
+  // Pantalla 0 — Mis eventos: con eventos / usuario nuevo
+  const s0Toggle=document.getElementById('s0-toggle');
+  if(s0Toggle){
+    s0Toggle.querySelectorAll('.state-btn').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        s0Toggle.querySelectorAll('.state-btn').forEach(b=>b.classList.remove('on'));
+        btn.classList.add('on');
+        document.getElementById('s0-withevents').style.display = btn.dataset.state==='withevents' ? 'block' : 'none';
+        document.getElementById('s0-empty').style.display = btn.dataset.state==='empty' ? 'flex' : 'none';
+      });
+    });
+  }
+
+  // Cualquier elemento con data-target navega igual que las pestañas superiores
+  function goToScreen(targetId){
+    const tab=document.querySelector('.tab[data-target="'+targetId+'"]');
+    if(tab) tab.click();
+  }
+  document.querySelectorAll('.home-add, .event-pass, .home-empty .cta-btn').forEach(el=>{
+    if(el.dataset.target){
+      el.addEventListener('click',()=>goToScreen(el.dataset.target));
+    }
   });
 </script>
 </body>
