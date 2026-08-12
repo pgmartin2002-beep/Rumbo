@@ -19,3 +19,26 @@ obj/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Node.js / JavaScript / TypeScript
+node_modules/
+dist/
+build/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+
+# PWA / Vite
+frontend/dev-dist/
+
+# Playwright
+test-results/
+playwright-report/
+e2e/.cache/
+e2e/.e2e-data/
+
+# Local JSON data store (keep folder, ignore data)
+backend/data/*.json
+
