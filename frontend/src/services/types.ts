@@ -49,6 +49,13 @@ export interface AgendaItem {
   motivo_recomendacion: string;
   en_conflicto: boolean;
   es_alternativa_de: string | null;
+  sesion: {
+    titulo: string;
+    inicio: string;
+    fin: string;
+    sala: string | null;
+    ponentes: string[];
+  } | null;
 }
 
 export interface Agenda {

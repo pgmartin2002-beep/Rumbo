@@ -57,9 +57,9 @@ test('Escenarios 1–5: importar → objetivos → agenda priorizada → recálc
   // Escenario 2: definir objetivos (selección múltiple).
   await page.getByRole('button', { name: /Definir mis objetivos/i }).click();
   await expect(page.getByRole('heading', { name: /¿Qué buscas conseguir\?/i })).toBeVisible();
-  await page.getByLabel(/Networking/i).check();
-  await page.getByLabel(/Inversores/i).check();
-  await page.getByRole('button', { name: /Guardar objetivos/i }).click();
+  await page.getByRole('button', { name: /Networking/i }).click();
+  await page.getByRole('button', { name: /Inversores/i }).click();
+  await page.getByRole('button', { name: /Generar mi agenda/i }).click();
 
   // Escenario 3: agenda priorizada con conflicto de horario señalado.
   await expect(page.getByRole('heading', { name: /Tu agenda priorizada/i })).toBeVisible();
@@ -67,19 +67,19 @@ test('Escenarios 1–5: importar → objetivos → agenda priorizada → recálc
   await expect(page.getByText(/Conflicto de horario/i).first()).toBeVisible();
 
   // Escenario 4: recálculo con confirmación explícita (Principio IV).
-  await page.getByRole('button', { name: /Recalcular agenda/i }).click();
+  await page.getByRole('button', { name: /ver agenda recalculada/i }).click();
   await expect(page.getByRole('dialog', { name: /Propuesta de recálculo de agenda/i })).toBeVisible();
   // La agenda NO cambia si el usuario no confirma: descartamos la propuesta.
-  await page.getByRole('button', { name: /Descartar/i }).click();
+  await page.getByRole('button', { name: /Mantener la actual/i }).click();
   await expect(page.getByRole('dialog', { name: /Propuesta de recálculo de agenda/i })).toHaveCount(0);
 
   // Escenario 5: logística — ruta y hora de salida.
   await page.getByRole('button', { name: /Preparar logística/i }).click();
-  await expect(page.getByRole('heading', { name: 'Logística' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Tu ruta al evento/i })).toBeVisible();
   await page.getByPlaceholder(/Punto de origen/i).fill('Hotel Centro');
   await page.getByRole('button', { name: /Calcular ruta/i }).click();
-  await expect(page.getByText(/Hora de salida:/i)).toBeVisible();
-  await expect(page.getByText(/Duración estimada:/i)).toBeVisible();
+  await expect(page.getByText(/Hora de salida recomendada/i)).toBeVisible();
+  await expect(page.getByText(/min de trayecto/i).first()).toBeVisible();
 
   // Principio VI: no debe haberse hecho ninguna petición fuera de localhost.
   expect(llamadasExternas, `Llamadas externas detectadas: ${llamadasExternas.join(', ')}`).toEqual([]);
@@ -87,7 +87,7 @@ test('Escenarios 1–5: importar → objetivos → agenda priorizada → recálc
 
 test('Escenario 6 (con datos): Mis eventos lista el evento en curso destacado', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Mis eventos' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Tus eventos/i })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'TechConf E2E' })).toBeVisible();
   await expect(page.getByText('En curso').first()).toBeVisible();
 });

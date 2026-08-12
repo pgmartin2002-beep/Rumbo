@@ -31,7 +31,9 @@ export default function Goals() {
     try {
       const res = await api.put<GoalProfile>(`/events/${id}/goals`, { objetivos: actuales });
       if (res.agenda_recalculo_disponible) {
-        setAviso('Tus objetivos cambiaron. La agenda se recalculará cuando lo confirmes en la pantalla de Agenda.');
+        setAviso(
+          'Tus objetivos cambiaron. La agenda se recalculará cuando lo confirmes en la pantalla de Agenda.',
+        );
       } else {
         navigate(`/eventos/${id}/agenda`);
       }
@@ -42,24 +44,44 @@ export default function Goals() {
 
   return (
     <section>
-      <h1>¿Qué buscas conseguir?</h1>
-      <p>Elige uno o varios objetivos. Adaptaremos tu agenda a ellos.</p>
-      <div className="card">
-        {OBJETIVOS.map((o) => (
-          <label key={o.id} style={{ display: 'block', padding: '8px 0' }}>
-            <input
-              type="checkbox"
-              checked={actuales.includes(o.id)}
-              onChange={() => toggle(o.id)}
-            />{' '}
-            {o.label}
-          </label>
-        ))}
+      <div className="crumb">Objetivos</div>
+      <h1 className="screen-title">¿Qué buscas conseguir?</h1>
+      <p className="screen-sub">
+        Elige una o varias opciones. Puedes cambiarlas antes o durante el evento cuando quieras.
+      </p>
+
+      <div className="goal-grid">
+        {OBJETIVOS.map((o) => {
+          const sel = actuales.includes(o.id);
+          return (
+            <button
+              key={o.id}
+              className={`goal-chip ${sel ? 'sel' : ''}`}
+              aria-pressed={sel}
+              onClick={() => toggle(o.id)}
+            >
+              {o.label}
+            </button>
+          );
+        })}
       </div>
-      {aviso && <div className="card" role="status">{aviso}</div>}
-      <button className="btn-primary" onClick={guardar} disabled={saving || actuales.length === 0}>
-        {saving ? 'Guardando…' : 'Guardar objetivos'}
-      </button>
+
+      {aviso && (
+        <div className="aviso-recalculo" role="status">
+          {aviso}
+        </div>
+      )}
+
+      <div className="cta-bottom">
+        <div className="hint">
+          {actuales.length === 0
+            ? 'Selecciona al menos un objetivo'
+            : `${actuales.length} objetivo${actuales.length > 1 ? 's' : ''} seleccionado${actuales.length > 1 ? 's' : ''}`}
+        </div>
+        <button className="cta-btn" onClick={guardar} disabled={saving || actuales.length === 0}>
+          {saving ? 'Guardando…' : 'Generar mi agenda →'}
+        </button>
+      </div>
     </section>
   );
 }

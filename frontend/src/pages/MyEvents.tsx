@@ -1,10 +1,22 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../services/api-client.js';
 import type { EventoListado } from '../services/types.js';
-import { EmptyState, ErrorState, Loading, useAsync } from '../components/States.js';
+import { ErrorState, Loading, useAsync } from '../components/States.js';
 
-function estadoLabel(e: EventoListado['estado_derivado']): string {
-  return e === 'en_curso' ? 'En curso' : e === 'proximo' ? 'Próximo' : 'Cerrado';
+const PASOS = [
+  { key: 'importado', label: 'Evento importado' },
+  { key: 'objetivos_definidos', label: 'Definir objetivos' },
+  { key: 'agenda_generada', label: 'Generar agenda' },
+] as const;
+
+function fechaCorta(iso: string): string {
+  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+}
+
+function estadoTexto(e: EventoListado): string {
+  if (e.estado_derivado === 'en_curso') return 'En curso · hoy';
+  if (e.estado_derivado === 'proximo') return 'Próximo';
+  return 'Cerrado';
 }
 
 function puntoRetorno(e: EventoListado): string {
@@ -12,6 +24,11 @@ function puntoRetorno(e: EventoListado): string {
   if (e.progreso_onboarding === 'agenda_generada') return `/eventos/${e.id}/agenda`;
   if (e.progreso_onboarding === 'objetivos_definidos') return `/eventos/${e.id}/agenda`;
   return `/eventos/${e.id}/objetivos`;
+}
+
+function pasoCompletado(e: EventoListado, key: string): boolean {
+  const orden = ['importado', 'objetivos_definidos', 'agenda_generada'];
+  return orden.indexOf(e.progreso_onboarding) >= orden.indexOf(key);
 }
 
 export default function MyEvents() {
@@ -25,49 +42,83 @@ export default function MyEvents() {
 
   if (eventos.length === 0) {
     return (
-      <EmptyState>
-        <h1>Bienvenido a Rumbo</h1>
-        <p>Aún no tienes eventos. Empieza importando tu primer evento.</p>
-        <Link to="/importar">
-          <button className="btn-primary">Añadir mi primer evento</button>
-        </Link>
-      </EmptyState>
+      <section>
+        <div className="crumb">Hola</div>
+        <div className="home-empty">
+          <div className="he-ic">✦</div>
+          <h1 className="he-title">Bienvenido a Rumbo</h1>
+          <div className="he-sub">
+            Aún no tienes eventos. Trae el primero desde una URL, un PDF, un QR o buscándolo, y Rumbo
+            se encarga de lo demás.
+          </div>
+          <Link to="/importar">
+            <button className="cta-btn auto">Añadir mi primer evento →</button>
+          </Link>
+        </div>
+      </section>
     );
   }
 
   return (
     <section>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Mis eventos</h1>
-        <Link to="/importar">
-          <button className="btn-primary">+ Nuevo</button>
-        </Link>
-      </header>
+      <div className="crumb">Hola</div>
+      <h1 className="screen-title">Tus eventos</h1>
+      <p className="screen-sub">Cada evento guarda su propia agenda, objetivos y contactos.</p>
 
-      {eventos.map((e) => (
-        <article
-          key={e.id}
-          className="card"
-          onClick={() => navigate(puntoRetorno(e))}
-          style={{ cursor: 'pointer' }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <h2>{e.nombre}</h2>
-            <span className={`badge badge-${e.estado_derivado}`}>{estadoLabel(e.estado_derivado)}</span>
+      <Link to="/importar" style={{ textDecoration: 'none' }}>
+        <button className="home-add">
+          <div className="ha-ic">+</div>
+          <div>
+            <div className="ha-t">Trae tu próximo evento</div>
+            <div className="ha-s">URL, PDF, QR, calendario o búsqueda</div>
           </div>
-          <p className="ticket-data">
-            {new Date(e.fecha_inicio).toLocaleDateString()} · {e.ubicacion ?? 'Ubicación por confirmar'}
-          </p>
-          {e.pasos_pendientes.length > 0 && (
-            <p className="state-empty" style={{ padding: 8, textAlign: 'left' }}>
-              Pendiente: {e.pasos_pendientes.join(', ')}
-            </p>
-          )}
-          {e.estado_derivado === 'en_curso' && (
-            <p className="ticket-data">Ahora te toca tu próxima actividad programada.</p>
-          )}
-        </article>
-      ))}
+        </button>
+      </Link>
+
+      {eventos.map((e) => {
+        const enCurso = e.estado_derivado === 'en_curso';
+        const completo = e.progreso_onboarding === 'agenda_generada';
+        const statusClass =
+          e.estado_derivado === 'proximo'
+            ? 'upcoming'
+            : e.estado_derivado === 'cerrado'
+              ? 'closed'
+              : '';
+        return (
+          <button key={e.id} className="event-pass" onClick={() => navigate(puntoRetorno(e))}>
+            <div className="ep-top">
+              <div className={`ep-status-row ${statusClass}`}>
+                {enCurso && <span className="ep-live-dot" />}
+                <span className="ep-status">{estadoTexto(e)}</span>
+              </div>
+              <h2 className="ep-name">{e.nombre}</h2>
+              <div className="ep-meta">
+                {fechaCorta(e.fecha_inicio)} · {e.ubicacion ?? 'Ubicación por confirmar'}
+              </div>
+            </div>
+            <div className="perf" />
+            <div className="ep-bottom">
+              {completo ? (
+                <div className="ep-summary">
+                  Onboarding completo · <b>toca tu próxima actividad programada</b>
+                </div>
+              ) : (
+                <div className="ep-checklist">
+                  {PASOS.map((p) => {
+                    const done = pasoCompletado(e, p.key);
+                    return (
+                      <div key={p.key} className={`ep-check-row ${done ? 'done' : 'pending'}`}>
+                        <div className="cdot">{done ? '✓' : ''}</div>
+                        <span>{p.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </button>
+        );
+      })}
     </section>
   );
 }
