@@ -68,7 +68,7 @@ Como asistente a un evento con mi agenda ya generada, quiero que la app me prepa
 3. **Dado** que prefiero transporte público, **Cuando** pido la ruta, **Entonces** la app me ofrece opciones de transporte público con sus horarios y tiempos estimados.
 4. **Dado** que voy a desplazarme en coche, **Cuando** consulto opciones de aparcamiento, **Entonces** la app me muestra aparcamientos cercanos al recinto.
 5. **Dado** que hay tráfico, un retraso en el transporte o un cambio de ubicación del evento, **Cuando** el sistema lo detecta, **Entonces** me envía una alerta con margen suficiente para ajustar mi hora de salida.
-6. **Dado** que la ubicación de una sesión o sede cambia después de haber calculado mi ruta, **Cuando** ocurre el cambio, **Entonces** la app actualiza automáticamente la ruta y la hora de salida recomendada.
+6. **Dado** que la ubicación de una sesión o sede cambia después de haber calculado mi ruta, **Cuando** ocurre el cambio, **Entonces** la app me propone una nueva ruta y una nueva hora de salida recomendada, y solo las aplica cuando confirmo el cambio.
 
 ### Historia de Usuario 5 - Gestionar mis eventos desde un único punto de entrada (Prioridad: P1)
 
@@ -118,14 +118,14 @@ Como asistente que puede tener varios eventos en distintos momentos (uno hoy, ot
 - **FR-012**: El sistema DEBE generar una agenda personalizada que clasifique cada sesión del evento como imprescindible, opcional o descartable en función de los objetivos declarados por el usuario.
 - **FR-013**: El sistema DEBE mostrar, para cada sesión recomendada, una explicación en lenguaje llano de por qué se recomienda.
 - **FR-014**: El sistema DEBE detectar y señalar los conflictos de horario entre sesiones recomendadas.
-- **FR-015**: El sistema DEBE recalcular la agenda cuando el usuario modifica sus objetivos o cuando cambian los datos del evento. [NECESITA ACLARACIÓN: ¿el recálculo es automático o requiere que el usuario lo confirme explícitamente?]
+- **FR-015**: El sistema DEBE proponer un recálculo de la agenda cuando el usuario modifica sus objetivos o cuando cambian los datos del evento, y solo aplicarlo tras la confirmación explícita del usuario (conforme al Principio IV de la constitución: la app propone, el usuario confirma).
 - **FR-016**: El sistema DEBE permitir indicar un punto de origen (casa, hotel, oficina u otro) para calcular la ruta hacia el evento.
 - **FR-017**: El sistema DEBE calcular y mostrar la ruta recomendada y la hora de salida recomendada en función de la hora de inicio de la primera actividad del usuario.
 - **FR-018**: El sistema DEBE ofrecer opciones de transporte (público y privado) con sus tiempos estimados.
 - **FR-019**: El sistema DEBE mostrar opciones de aparcamiento cercano al recinto cuando el usuario elige desplazarse en coche.
 - **FR-020**: El sistema DEBE calcular el tiempo necesario para desplazarse entre salas o sedes distintas del evento y advertir cuando el hueco disponible en la agenda es insuficiente.
 - **FR-021**: El sistema DEBE enviar una alerta al usuario cuando detecte tráfico, retrasos en el transporte o cambios de ubicación que afecten a su plan. [NECESITA ACLARACIÓN: ¿qué fuente de datos de tráfico y transporte en tiempo real usará el sistema?]
-- **FR-022**: El sistema DEBE actualizar la ruta y la hora de salida recomendada cuando cambie la ubicación de una sesión o sede ya planificada.
+- **FR-022**: El sistema DEBE proponer una actualización de la ruta y de la hora de salida recomendada cuando cambie la ubicación de una sesión o sede ya planificada, y solo aplicarla tras la confirmación explícita del usuario (conforme al Principio IV de la constitución: la app propone, el usuario confirma).
 - **FR-023**: El sistema DEBE mostrar, como pantalla de inicio, la lista de todos los eventos guardados por el usuario.
 - **FR-024**: El sistema DEBE clasificar cada evento de la lista como en curso, próximo o cerrado, en función de sus fechas respecto al momento actual.
 - **FR-025**: El sistema DEBE destacar el evento en curso en primer lugar de la lista, mostrando junto a él la actividad que corresponde al usuario en ese momento (dependencia con el modo simplificado, especificado en la spec `002-preparar-interacciones-vivir-evento`).
