@@ -29,11 +29,11 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 **Purpose**: Inicialización del proyecto y estructura base (monorepo frontend + backend + e2e).
 
-- [ ] T001 Crear la estructura de carpetas del monorepo por plan.md: `frontend/src/{components,pages,services,styles,state}`, `frontend/tests/{unit,integration}`, `backend/src/{models,services,integrations,api,repositories}`, `backend/tests/{contract,integration}`, `e2e/`, y `backend/data/` (directorio de ficheros JSON) con `.gitkeep`
-- [ ] T002 [P] Inicializar el frontend en `frontend/` con Vite + React 18 + TypeScript 5.x, añadir `react-router-dom`, `vite-plugin-pwa` y configurar `frontend/vite.config.ts` (plugin PWA instalable/offline)
-- [ ] T003 [P] Inicializar el backend en `backend/` con Node.js 20 + Fastify + TypeScript 5.x y configurar `backend/tsconfig.json` y script de arranque en `backend/package.json`
-- [ ] T004 [P] Configurar ESLint + Prettier compartidos para `frontend/` y `backend/` (config en la raíz `.eslintrc.cjs` y `.prettierrc`)
-- [ ] T005 [P] Añadir tooling de pruebas de validación: Vitest en `frontend/` y `backend/`, y Playwright en `e2e/playwright.config.ts` (sin escribir casos todavía; se usan en la fase de pulido con quickstart.md)
+- [X] T001 Crear la estructura de carpetas del monorepo por plan.md: `frontend/src/{components,pages,services,styles,state}`, `frontend/tests/{unit,integration}`, `backend/src/{models,services,integrations,api,repositories}`, `backend/tests/{contract,integration}`, `e2e/`, y `backend/data/` (directorio de ficheros JSON) con `.gitkeep`
+- [X] T002 [P] Inicializar el frontend en `frontend/` con Vite + React 18 + TypeScript 5.x, añadir `react-router-dom`, `vite-plugin-pwa` y configurar `frontend/vite.config.ts` (plugin PWA instalable/offline)
+- [X] T003 [P] Inicializar el backend en `backend/` con Node.js 20 + Fastify + TypeScript 5.x y configurar `backend/tsconfig.json` y script de arranque en `backend/package.json`
+- [X] T004 [P] Configurar ESLint + Prettier compartidos para `frontend/` y `backend/` (config en la raíz `.eslintrc.cjs` y `.prettierrc`)
+- [X] T005 [P] Añadir tooling de pruebas de validación: Vitest en `frontend/` y `backend/`, y Playwright en `e2e/playwright.config.ts` (sin escribir casos todavía; se usan en la fase de pulido con quickstart.md)
 
 ---
 
@@ -43,13 +43,13 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 **⚠️ CRITICAL**: Ninguna historia de usuario puede empezar hasta completar esta fase.
 
-- [ ] T006 [P] Definir los tipos/entidades de dominio y sus esquemas de validación (Evento, Sesión, Ponente, Empresa participante, Perfil de objetivos, Agenda personalizada, AgendaItem, Ruta, Alerta logística) en `backend/src/models/` según data-model.md
-- [ ] T007 Implementar la capa de repositorio JSON genérica en `backend/src/repositories/json-repository.ts` (lectura/escritura atómica por colección en `backend/data/`, resolución de referencias por `id`, directorio de datos configurable/aislado para tests) — interfaz estable que permita migrar a BD más adelante
-- [ ] T008 [P] Configurar la app Fastify y el enrutado base bajo `/api` en `backend/src/api/server.ts`, con middleware de manejo de errores y formato de error `{ "error": "<código>", "mensaje": "<texto>" }` (convención de contracts/api.md) en `backend/src/api/error-handler.ts`
-- [ ] T009 [P] Definir las interfaces de los adaptadores de integración externa (motor de extracción de eventos y proveedor de mapas/tráfico) en `backend/src/integrations/` con implementaciones stub/mock para el MVP (el cliente nunca llama a servicios externos — Principio VI)
-- [ ] T010 [P] Implementar el cliente HTTP del frontend hacia el BFF en `frontend/src/services/api-client.ts` (única vía de acceso a datos; nunca a servicios externos — Principio VI), con manejo de estados de carga/error (Principio VIII)
-- [ ] T011 Crear el shell de la PWA y el enrutado en `frontend/src/App.tsx` y `frontend/src/main.tsx` (React Router con rutas: Mis eventos, Importar, Objetivos, Agenda, Logística; estados de carga/error globales)
-- [ ] T012 [P] Añadir los tokens de diseño (paleta `--ink`, `--paper`, etc.) y tipografías (Space Grotesk, IBM Plex Sans, IBM Plex Mono) en `frontend/src/styles/tokens.css`, respetando la identidad de `design/design.md` sin introducir un cuarto color de acento (Principio III)
+- [X] T006 [P] Definir los tipos/entidades de dominio y sus esquemas de validación (Evento, Sesión, Ponente, Empresa participante, Perfil de objetivos, Agenda personalizada, AgendaItem, Ruta, Alerta logística) en `backend/src/models/` según data-model.md
+- [X] T007 Implementar la capa de repositorio JSON genérica en `backend/src/repositories/json-repository.ts` (lectura/escritura atómica por colección en `backend/data/`, resolución de referencias por `id`, directorio de datos configurable/aislado para tests) — interfaz estable que permita migrar a BD más adelante
+- [X] T008 [P] Configurar la app Fastify y el enrutado base bajo `/api` en `backend/src/api/server.ts`, con middleware de manejo de errores y formato de error `{ "error": "<código>", "mensaje": "<texto>" }` (convención de contracts/api.md) en `backend/src/api/error-handler.ts`
+- [X] T009 [P] Definir las interfaces de los adaptadores de integración externa (motor de extracción de eventos y proveedor de mapas/tráfico) en `backend/src/integrations/` con implementaciones stub/mock para el MVP (el cliente nunca llama a servicios externos — Principio VI)
+- [X] T010 [P] Implementar el cliente HTTP del frontend hacia el BFF en `frontend/src/services/api-client.ts` (única vía de acceso a datos; nunca a servicios externos — Principio VI), con manejo de estados de carga/error (Principio VIII)
+- [X] T011 Crear el shell de la PWA y el enrutado en `frontend/src/App.tsx` y `frontend/src/main.tsx` (React Router con rutas: Mis eventos, Importar, Objetivos, Agenda, Logística; estados de carga/error globales)
+- [X] T012 [P] Añadir los tokens de diseño (paleta `--ink`, `--paper`, etc.) y tipografías (Space Grotesk, IBM Plex Sans, IBM Plex Mono) en `frontend/src/styles/tokens.css`, respetando la identidad de `design/design.md` sin introducir un cuarto color de acento (Principio III)
 
 **Checkpoint**: Fundación lista — las historias de usuario pueden empezar.
 
@@ -63,12 +63,12 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 ### Implementation for User Story 1
 
-- [ ] T013 [P] [US1] Implementar los repositorios de Evento, Sesión, Ponente y Empresa participante sobre la capa JSON en `backend/src/repositories/{event,session,speaker,company}-repository.ts`
-- [ ] T014 [US1] Implementar el servicio de importación en `backend/src/services/import-service.ts` que invoca el adaptador de extracción (T009), mapea la fuente a entidades y calcula `campos_faltantes` (FR-006, FR-007)
-- [ ] T015 [US1] Implementar `POST /api/events/import` en `backend/src/api/routes/events-import.ts` (Body `{fuente, payload}`; **201** `EventDraft` con `campos_faltantes`; **422** `fuente_ilegible`) — FR-001–FR-007
-- [ ] T016 [US1] Implementar `PATCH /api/events/{id}` en `backend/src/api/routes/events-patch.ts` para completar/corregir datos del evento (**200** `Event`) — FR-008
-- [ ] T017 [P] [US1] Crear la página Importar en `frontend/src/pages/ImportEvent.tsx` con selector de fuente (URL/PDF/imagen/calendario/correo/QR/buscador) y estados de carga/error, incluido `illegible-card` para la respuesta 422 (FR-001–FR-005, Principio VIII)
-- [ ] T018 [US1] Crear la vista de revisión del evento importado en `frontend/src/pages/EventReview.tsx` que muestra datos extraídos, señala visiblemente los campos faltantes y permite editarlos (FR-007, FR-008)
+- [X] T013 [P] [US1] Implementar los repositorios de Evento, Sesión, Ponente y Empresa participante sobre la capa JSON en `backend/src/repositories/{event,session,speaker,company}-repository.ts`
+- [X] T014 [US1] Implementar el servicio de importación en `backend/src/services/import-service.ts` que invoca el adaptador de extracción (T009), mapea la fuente a entidades y calcula `campos_faltantes` (FR-006, FR-007)
+- [X] T015 [US1] Implementar `POST /api/events/import` en `backend/src/api/routes/events-import.ts` (Body `{fuente, payload}`; **201** `EventDraft` con `campos_faltantes`; **422** `fuente_ilegible`) — FR-001–FR-007
+- [X] T016 [US1] Implementar `PATCH /api/events/{id}` en `backend/src/api/routes/events-patch.ts` para completar/corregir datos del evento (**200** `Event`) — FR-008
+- [X] T017 [P] [US1] Crear la página Importar en `frontend/src/pages/ImportEvent.tsx` con selector de fuente (URL/PDF/imagen/calendario/correo/QR/buscador) y estados de carga/error, incluido `illegible-card` para la respuesta 422 (FR-001–FR-005, Principio VIII)
+- [X] T018 [US1] Crear la vista de revisión del evento importado en `frontend/src/pages/EventReview.tsx` que muestra datos extraídos, señala visiblemente los campos faltantes y permite editarlos (FR-007, FR-008)
 
 **Checkpoint**: Un evento puede importarse, revisarse y corregirse de forma independiente.
 
@@ -82,10 +82,10 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] [US2] Implementar el repositorio de Perfil de objetivos sobre la capa JSON en `backend/src/repositories/goal-profile-repository.ts` (relación 1—1 con Evento)
-- [ ] T020 [US2] Implementar el servicio de objetivos en `backend/src/services/goals-service.ts` (validación ≥1 objetivo, selección múltiple, actualiza `progreso_onboarding` a `objetivos_definidos`) — FR-009, FR-010, FR-011
-- [ ] T021 [US2] Implementar `PUT /api/events/{id}/goals` en `backend/src/api/routes/events-goals.ts` (**200** `GoalProfile`; incluye `agenda_recalculo_disponible: true` si ya hay agenda, SIN recalcular) — FR-009–FR-011, Principio IV
-- [ ] T022 [US2] Crear la página Objetivos en `frontend/src/pages/Goals.tsx` con la lista de objetivos (aprender, clientes, empleo, inversores, networking, presentar, colaboradores, disfrutar), selección múltiple y aviso de recálculo pendiente cuando ya existe agenda (FR-010, Principio IV)
+- [X] T019 [P] [US2] Implementar el repositorio de Perfil de objetivos sobre la capa JSON en `backend/src/repositories/goal-profile-repository.ts` (relación 1—1 con Evento)
+- [X] T020 [US2] Implementar el servicio de objetivos en `backend/src/services/goals-service.ts` (validación ≥1 objetivo, selección múltiple, actualiza `progreso_onboarding` a `objetivos_definidos`) — FR-009, FR-010, FR-011
+- [X] T021 [US2] Implementar `PUT /api/events/{id}/goals` en `backend/src/api/routes/events-goals.ts` (**200** `GoalProfile`; incluye `agenda_recalculo_disponible: true` si ya hay agenda, SIN recalcular) — FR-009–FR-011, Principio IV
+- [X] T022 [US2] Crear la página Objetivos en `frontend/src/pages/Goals.tsx` con la lista de objetivos (aprender, clientes, empleo, inversores, networking, presentar, colaboradores, disfrutar), selección múltiple y aviso de recálculo pendiente cuando ya existe agenda (FR-010, Principio IV)
 
 **Checkpoint**: Los objetivos de un evento se definen, consultan y modifican de forma independiente.
 
@@ -101,13 +101,13 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 ### Implementation for User Story 3
 
-- [ ] T023 [P] [US3] Implementar el repositorio de Agenda personalizada sobre la capa JSON en `backend/src/repositories/agenda-repository.ts` (relación 1—1 con Evento, `items: AgendaItem[]`)
-- [ ] T024 [US3] Implementar el servicio de priorización en `backend/src/services/agenda-service.ts`: clasifica sesiones por objetivos, genera `motivo_recomendacion`, detecta conflictos de horario y marca alternativas (FR-012, FR-013, FR-014)
-- [ ] T025 [US3] Implementar el cálculo de la propuesta de recálculo (diff) en `agenda-service.ts` sin aplicarla (FR-015, Principio IV)
-- [ ] T026 [US3] Implementar `POST /api/events/{id}/agenda` en `backend/src/api/routes/events-agenda.ts` (**200** `Agenda`; **409** `sin_objetivos` si no hay objetivos) — FR-009, FR-012–FR-014
-- [ ] T027 [US3] Implementar `GET /api/events/{id}/agenda/recalculo` (**200** `AgendaDiff`, propuesta sin aplicar) y `POST /api/events/{id}/agenda/aplicar` (**200** `Agenda` actualizada, solo tras confirmación) en `backend/src/api/routes/events-agenda-recalc.ts` — FR-015, Principio IV
-- [ ] T028 [P] [US3] Crear la página Agenda en `frontend/src/pages/Agenda.tsx` con sesiones agrupadas por prioridad, motivo por sesión y señalización de conflictos con su alternativa (FR-012–FR-014)
-- [ ] T029 [US3] Crear el componente `agenda-diff-card` en `frontend/src/components/AgendaDiffCard.tsx` que muestra la propuesta de recálculo con doble acción (confirmar / descartar), aplicando el cambio solo al confirmar (FR-015, Principio IV)
+- [X] T023 [P] [US3] Implementar el repositorio de Agenda personalizada sobre la capa JSON en `backend/src/repositories/agenda-repository.ts` (relación 1—1 con Evento, `items: AgendaItem[]`)
+- [X] T024 [US3] Implementar el servicio de priorización en `backend/src/services/agenda-service.ts`: clasifica sesiones por objetivos, genera `motivo_recomendacion`, detecta conflictos de horario y marca alternativas (FR-012, FR-013, FR-014)
+- [X] T025 [US3] Implementar el cálculo de la propuesta de recálculo (diff) en `agenda-service.ts` sin aplicarla (FR-015, Principio IV)
+- [X] T026 [US3] Implementar `POST /api/events/{id}/agenda` en `backend/src/api/routes/events-agenda.ts` (**200** `Agenda`; **409** `sin_objetivos` si no hay objetivos) — FR-009, FR-012–FR-014
+- [X] T027 [US3] Implementar `GET /api/events/{id}/agenda/recalculo` (**200** `AgendaDiff`, propuesta sin aplicar) y `POST /api/events/{id}/agenda/aplicar` (**200** `Agenda` actualizada, solo tras confirmación) en `backend/src/api/routes/events-agenda-recalc.ts` — FR-015, Principio IV
+- [X] T028 [P] [US3] Crear la página Agenda en `frontend/src/pages/Agenda.tsx` con sesiones agrupadas por prioridad, motivo por sesión y señalización de conflictos con su alternativa (FR-012–FR-014)
+- [X] T029 [US3] Crear el componente `agenda-diff-card` en `frontend/src/components/AgendaDiffCard.tsx` que muestra la propuesta de recálculo con doble acción (confirmar / descartar), aplicando el cambio solo al confirmar (FR-015, Principio IV)
 
 **Checkpoint**: La agenda se genera, explica, señala conflictos y solo se recalcula tras confirmación.
 
@@ -121,11 +121,11 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 ### Implementation for User Story 5
 
-- [ ] T030 [US5] Implementar el servicio de "Mis eventos" en `backend/src/services/events-list-service.ts`: deriva el estado (en_curso/proximo/cerrado) por fechas, ordena destacando el evento en curso y expone el `progreso_onboarding` y el punto de retorno (FR-023, FR-024, FR-026, FR-028)
-- [ ] T031 [US5] Implementar `GET /api/events` (**200** `Event[]` con `estado_derivado` y `progreso_onboarding`; `[]` para estado de bienvenida) en `backend/src/api/routes/events-list.ts` — FR-023, FR-024, FR-025, FR-026, FR-029
-- [ ] T032 [US5] Implementar `GET /api/events/{id}` (**200** `EventDetail` con punto de retorno; **404** si no existe) en `backend/src/api/routes/events-detail.ts` — FR-028
-- [ ] T033 [P] [US5] Crear la página Mis eventos en `frontend/src/pages/MyEvents.tsx`: lista con nombre/fechas/ubicación/estado, evento en curso destacado en primer lugar, indicadores de pasos de onboarding pendientes y acceso a eventos cerrados (FR-023–FR-026)
-- [ ] T034 [US5] Añadir el estado de bienvenida (sin eventos) y la acción "añadir evento nuevo" que enlaza al flujo de importación sin perder los eventos existentes, más la navegación al punto de retorno al seleccionar un evento, en `frontend/src/pages/MyEvents.tsx` (FR-027, FR-028, FR-029)
+- [X] T030 [US5] Implementar el servicio de "Mis eventos" en `backend/src/services/events-list-service.ts`: deriva el estado (en_curso/proximo/cerrado) por fechas, ordena destacando el evento en curso y expone el `progreso_onboarding` y el punto de retorno (FR-023, FR-024, FR-026, FR-028)
+- [X] T031 [US5] Implementar `GET /api/events` (**200** `Event[]` con `estado_derivado` y `progreso_onboarding`; `[]` para estado de bienvenida) en `backend/src/api/routes/events-list.ts` — FR-023, FR-024, FR-025, FR-026, FR-029
+- [X] T032 [US5] Implementar `GET /api/events/{id}` (**200** `EventDetail` con punto de retorno; **404** si no existe) en `backend/src/api/routes/events-detail.ts` — FR-028
+- [X] T033 [P] [US5] Crear la página Mis eventos en `frontend/src/pages/MyEvents.tsx`: lista con nombre/fechas/ubicación/estado, evento en curso destacado en primer lugar, indicadores de pasos de onboarding pendientes y acceso a eventos cerrados (FR-023–FR-026)
+- [X] T034 [US5] Añadir el estado de bienvenida (sin eventos) y la acción "añadir evento nuevo" que enlaza al flujo de importación sin perder los eventos existentes, más la navegación al punto de retorno al seleccionar un evento, en `frontend/src/pages/MyEvents.tsx` (FR-027, FR-028, FR-029)
 
 **Checkpoint**: La home lista, clasifica, prioriza y permite retomar/añadir eventos de forma independiente.
 
@@ -139,13 +139,13 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 ### Implementation for User Story 4
 
-- [ ] T035 [P] [US4] Implementar los repositorios de Ruta y Alerta logística sobre la capa JSON en `backend/src/repositories/{route,alert}-repository.ts` (Ruta con `estado` propuesta/confirmada)
-- [ ] T036 [US4] Implementar el servicio de logística en `backend/src/services/logistics-service.ts` usando el adaptador de mapas/tráfico (T009): ruta, hora de salida recomendada, opciones de transporte, aparcamiento y avisos de desplazamiento entre salas (FR-016–FR-020)
-- [ ] T037 [US4] Implementar la generación de alertas y la propuesta de nueva hora de salida (sin aplicar) en `logistics-service.ts` (FR-021, FR-022, Principio IV)
-- [ ] T038 [US4] Implementar `POST /api/events/{id}/route` (**200** `Route` con hora de salida, transporte, `parking[]` si coche y `avisos_desplazamiento[]`) en `backend/src/api/routes/events-route.ts` — FR-016–FR-020
-- [ ] T039 [US4] Implementar `GET /api/events/{id}/alerts` (**200** `Alert[]` con `propuesta_hora_salida`) y `POST /api/events/{id}/route/confirmar` (**200** `Route` con `estado: "confirmada"`, solo tras confirmación) en `backend/src/api/routes/events-alerts.ts` — FR-021, FR-022, Principio IV
-- [ ] T040 [P] [US4] Crear la página Logística en `frontend/src/pages/Logistics.tsx` con entrada de origen, ruta, hora de salida, opciones de transporte y aparcamiento, y avisos de desplazamiento (FR-016–FR-020)
-- [ ] T041 [US4] Crear el componente `alert-card` en `frontend/src/components/AlertCard.tsx` que muestra la alerta y la propuesta de nueva hora de salida con doble acción, aplicándola solo al confirmar (FR-021, FR-022, Principio IV)
+- [X] T035 [P] [US4] Implementar los repositorios de Ruta y Alerta logística sobre la capa JSON en `backend/src/repositories/{route,alert}-repository.ts` (Ruta con `estado` propuesta/confirmada)
+- [X] T036 [US4] Implementar el servicio de logística en `backend/src/services/logistics-service.ts` usando el adaptador de mapas/tráfico (T009): ruta, hora de salida recomendada, opciones de transporte, aparcamiento y avisos de desplazamiento entre salas (FR-016–FR-020)
+- [X] T037 [US4] Implementar la generación de alertas y la propuesta de nueva hora de salida (sin aplicar) en `logistics-service.ts` (FR-021, FR-022, Principio IV)
+- [X] T038 [US4] Implementar `POST /api/events/{id}/route` (**200** `Route` con hora de salida, transporte, `parking[]` si coche y `avisos_desplazamiento[]`) en `backend/src/api/routes/events-route.ts` — FR-016–FR-020
+- [X] T039 [US4] Implementar `GET /api/events/{id}/alerts` (**200** `Alert[]` con `propuesta_hora_salida`) y `POST /api/events/{id}/route/confirmar` (**200** `Route` con `estado: "confirmada"`, solo tras confirmación) en `backend/src/api/routes/events-alerts.ts` — FR-021, FR-022, Principio IV
+- [X] T040 [P] [US4] Crear la página Logística en `frontend/src/pages/Logistics.tsx` con entrada de origen, ruta, hora de salida, opciones de transporte y aparcamiento, y avisos de desplazamiento (FR-016–FR-020)
+- [X] T041 [US4] Crear el componente `alert-card` en `frontend/src/components/AlertCard.tsx` que muestra la alerta y la propuesta de nueva hora de salida con doble acción, aplicándola solo al confirmar (FR-021, FR-022, Principio IV)
 
 **Checkpoint**: La logística calcula ruta/hora, alerta de imprevistos y solo actualiza tras confirmación.
 
@@ -155,11 +155,11 @@ Estructura **web application** (de plan.md): `frontend/src/`, `backend/src/`, `e
 
 **Purpose**: Mejoras transversales y validación end-to-end de la feature.
 
-- [ ] T042 [P] Revisar estados de carga y error visibles en todas las páginas y operaciones (importación, agenda, ruta) para cumplir el Principio VIII, en `frontend/src/`
-- [ ] T043 [P] Verificar la trazabilidad: toda Sesión, Ruta y Alerta referencia su Evento en la capa de repositorio (Principio VIII), en `backend/src/repositories/`
-- [ ] T044 [P] Manejar los casos límite de spec.md en los servicios correspondientes de `backend/src/services/`: evento sin sesiones priorizables, agenda pedida sin objetivos, sin origen indicado, sin transporte público cercano, evento multi-sede, **dos eventos en curso solapados** (mostrar ambos en "en curso" ordenados por la actividad más inmediata — T030), conflicto entre dos fuentes del mismo evento y cambio del programa tras generar la agenda (proponer recálculo, Principio IV)
-- [ ] T045 Ejecutar la validación de `quickstart.md` (6 escenarios) con Playwright en `e2e/` y confirmar el cumplimiento de los criterios de éxito SC-001…SC-009
-- [ ] T046 [P] Actualizar la documentación de arranque local (frontend + backend + directorio `backend/data/`) en `README.md`
+- [X] T042 [P] Revisar estados de carga y error visibles en todas las páginas y operaciones (importación, agenda, ruta) para cumplir el Principio VIII, en `frontend/src/`
+- [X] T043 [P] Verificar la trazabilidad: toda Sesión, Ruta y Alerta referencia su Evento en la capa de repositorio (Principio VIII), en `backend/src/repositories/`
+- [X] T044 [P] Manejar los casos límite de spec.md en los servicios correspondientes de `backend/src/services/`: evento sin sesiones priorizables, agenda pedida sin objetivos, sin origen indicado, sin transporte público cercano, evento multi-sede, **dos eventos en curso solapados** (mostrar ambos en "en curso" ordenados por la actividad más inmediata — T030), conflicto entre dos fuentes del mismo evento y cambio del programa tras generar la agenda (proponer recálculo, Principio IV)
+- [X] T045 Ejecutar la validación de `quickstart.md` (6 escenarios) con Playwright en `e2e/` y confirmar el cumplimiento de los criterios de éxito SC-001…SC-009
+- [X] T046 [P] Actualizar la documentación de arranque local (frontend + backend + directorio `backend/data/`) en `README.md`
 
 ---
 
