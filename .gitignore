@@ -16,6 +16,9 @@ obj/
 # Visual Studio Code
 .vscode/
 
+# Claude Code local settings (may contain credentials); skills/ is versioned
+.claude/settings.local.json
+
 # OS files
 .DS_Store
 Thumbs.db
