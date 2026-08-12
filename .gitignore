@@ -42,3 +42,6 @@ e2e/.e2e-data/
 # Local JSON data store (keep folder, ignore data)
 backend/data/*.json
 
+
+# TypeScript build info
+*.tsbuildinfo
