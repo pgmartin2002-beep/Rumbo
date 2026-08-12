@@ -77,7 +77,7 @@ Como asistente que acabo de conocer a alguien interesante, quiero registrar ráp
 ### Casos límite
 
 - Si el usuario abre el modo simplificado sin conexión a internet, la app sigue mostrando la actividad actual y su ubicación usando la agenda y sesiones ya descargadas previamente; solo la generación de preguntas nuevas y la transcripción de voz quedan en espera hasta recuperar la conexión.
-- ¿Cómo se comporta la app si el usuario dicta una nota de voz en un entorno muy ruidoso y la transcripción resulta poco fiable?
+- Si el usuario dicta una nota de voz en un entorno muy ruidoso y la transcripción no resulta fiable, la app guarda igualmente la nota (vinculada a la sesión/momento correspondiente) marcada como pendiente de completar, y permite al usuario escribir o corregir el contenido a mano.
 - Si dos sesiones se solapan en la agenda (conflicto ya señalado en la Actividad 1) y el usuario abre el modo simplificado en ese hueco, la app le muestra automáticamente la sesión de mayor prioridad según su agenda personalizada.
 - ¿Qué pasa si el usuario elimina una sesión de su agenda después de haber tomado notas o registrado contactos vinculados a ella?
 - Un contacto registrado sin ninguna nota, solo con el nombre, se guarda igualmente (la nota rápida es opcional) y el usuario puede añadirla o editarla más tarde desde su lista de personas.
@@ -121,7 +121,7 @@ Como asistente que acabo de conocer a alguien interesante, quiero registrar ráp
 - **SC-001**: El 70% de los usuarios consulta las preguntas sugeridas de al menos una sesión antes de que esta comience.
 - **SC-002**: El 90% de los usuarios que abren el modo simplificado durante una sesión ven la actividad correcta sin necesidad de navegar manualmente por la agenda.
 - **SC-003**: El tiempo medio para registrar un contacto (como mínimo, el nombre) es inferior a 15 segundos.
-- **SC-004**: El 90% de las notas de voz quedan transcritas de forma legible sin que el usuario necesite corregirlas manualmente.
+- **SC-004**: El 90% de las notas de voz quedan transcritas de forma legible sin que el usuario necesite corregirlas manualmente. *(Medible una vez esté integrado el motor real de transcripción de una spec de backend/integración; el adaptador stub del MVP de esta spec no permite medir este porcentaje.)*
 - **SC-005**: El 80% de los usuarios que asisten a un evento con esta funcionalidad terminan el evento con al menos una nota o un contacto registrado por cada sesión imprescindible de su agenda.
 - **SC-006**: El 0% de las notas o contactos capturados sin conexión se pierden al recuperar la conectividad.
 

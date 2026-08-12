@@ -96,7 +96,8 @@ muestra preguntas sugeridas, sin depender de notas ni contactos (spec.md Histori
 - [ ] T011 [P] [US1] Crear `frontend/src/pages/SessionQuestions.tsx`: lista de preguntas
       (sugeridas + manuales), botón "Regenerar", formulario de pregunta manual, y tarjeta de aviso
       cuando el backend responde `informacion_insuficiente` (reutilizar `.illegible-card` de
-      `tokens.css` como referencia visual de aviso)
+      `tokens.css` como referencia visual de aviso). Usar `useAsync`/`Loading`/`ErrorState` de
+      `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
 - [ ] T012 [US1] Añadir la ruta `/eventos/:id/agenda/:sesionId` en `frontend/src/App.tsx` y enlazar
       cada tarjeta `.pass` de `frontend/src/pages/Agenda.tsx` a `SessionQuestions` (depende de T011)
 - [ ] T013 [P] [US1] Crear `e2e/tests/preguntas.spec.ts` cubriendo el Escenario 1 de quickstart.md
@@ -121,7 +122,8 @@ notas ni contactos (spec.md Historia 2). No requiere endpoint de backend nuevo (
       sobre la agenda cacheada por `offline-store.ts` (T003); un `setInterval` de 30s reevalúa la
       sesión activa sin red; renderiza los 4 estados de la Historia 2 (sesión activa con sala, hueco
       con próxima actividad, evento no activo con primera/última actividad, y el caso de solape
-      resuelto por prioridad de FR-018)
+      resuelto por prioridad de FR-018). Usar `useAsync`/`Loading`/`ErrorState` de
+      `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
 - [ ] T015 [US2] En `SimplifiedMode.tsx`, al montar: si hay conexión, pedir
       `GET /api/events/:id/agenda` y guardar el resultado con `offline-store.ts`; si no hay
       conexión, usar la última agenda cacheada (depende de T014, T003)
@@ -167,7 +169,11 @@ comprobar que quedan asociadas a esa sesión, sin depender de contactos (spec.md
       `backend/src/api/app.ts` (depende de T023)
 - [ ] T025 [P] [US3] Crear `frontend/src/pages/Notes.tsx`: lista de notas con su sesión o "evento en
       general", crear nota de texto, grabar nota de voz con la Web API `MediaRecorder`, editar,
-      eliminar y reasignar la sesión de una nota vinculada al evento en general
+      eliminar y reasignar la sesión de una nota vinculada al evento en general. Al crear una nota,
+      resolver el `sesion_id` actual con `sesionActiva()` de `active-session.ts` (T002) sobre la
+      agenda cacheada por `offline-store.ts` (T003) antes de llamar a la API (research.md R7)
+      (depende de T002, T003). Usar `useAsync`/`Loading`/`ErrorState` de
+      `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
 - [ ] T026 [US3] Integrar `offline-store.ts` (T003) en `Notes.tsx`: si `api-client.ts` lanza un
       error de red (`ApiClientError` con `codigo: 'red'`) al crear, encolar la nota localmente y
       mostrarla como "pendiente de sincronizar"; sincronizar la cola al reconectar (depende de T025, T003)
@@ -215,7 +221,11 @@ nota y su contexto, sin depender de notas de sesión ni de seguimiento (spec.md 
       como distinto (Principio IV: nunca fusiona sin confirmación explícita)
 - [ ] T037 [P] [US4] Crear `frontend/src/pages/People.tsx`: lista de contactos con nombre, nota y
       sesión/momento; formulario de registro rápido (solo nombre obligatorio); edición de nota;
-      integra `DuplicateContactModal` (T036)
+      integra `DuplicateContactModal` (T036). Al registrar un contacto, resolver el `sesion_id`
+      actual con `sesionActiva()` de `active-session.ts` (T002) sobre la agenda cacheada por
+      `offline-store.ts` (T003) antes de llamar a la API (research.md R7) (depende de T002, T003).
+      Usar `useAsync`/`Loading`/`ErrorState` de `frontend/src/components/States.tsx` para los
+      estados de carga/error (Principio VIII)
 - [ ] T038 [US4] Integrar `offline-store.ts` (T003) en `People.tsx`: mismo patrón de cola offline
       que T026 pero para contactos (depende de T037, T003)
 - [ ] T039 [US4] Añadir la ruta `/eventos/:id/personas` en `frontend/src/App.tsx` y un enlace desde
@@ -258,10 +268,11 @@ nota y su contexto, sin depender de notas de sesión ni de seguimiento (spec.md 
 
 - **US1 (P1)**: sin dependencias de otras historias.
 - **US2 (P1)**: depende de Foundational (T002, T003); no depende de US1, US3 ni US4.
-- **US3 (P1)**: depende de Foundational (T003 para offline; usa `sesion_id` que el cliente ya
-  calculó con T002 en la pantalla de modo simplificado, pero la API de notas no exige que US2 exista
-  — se puede probar pasando cualquier `sesion_id` válido directamente).
-- **US4 (P1)**: igual que US3, depende de Foundational (T003) pero no de US2 ni US3.
+- **US3 (P1)**: depende de Foundational (T002 y T003). No depende de que la pantalla de US2 exista
+  como UI, pero sí de la función `active-session.ts` (T002) para resolver el `sesion_id` al crear
+  una nota; la API en sí acepta cualquier `sesion_id` válido, así que se puede probar la API
+  directamente sin pasar por la UI de US2.
+- **US4 (P1)**: igual que US3, depende de Foundational (T002 y T003) pero no de US2 ni US3.
 
 ### Parallel Opportunities
 
