@@ -64,7 +64,9 @@ Technical Context. Formato por entrada: Decisión · Justificación · Alternati
 - **Alternativas consideradas**: otros proveedores (Mapbox, HERE) — válidos, pero el diseño ya
   compromete la atribución visual a Google Maps; cambiarla implicaría revisar la identidad.
 - **Pendiente para spec de backend**: credenciales, cuotas y la fuente exacta de tráfico en
-  tiempo real (FR-021, marcado NEEDS CLARIFICATION en la spec).
+  tiempo real (FR-021). En la spec de producto, FR-021 y la HU3 esc.4 ya quedan cerradas
+  indicando que estos datos llegan "a través de un proveedor externo consumido desde el backend";
+  el proveedor concreto se decide en la spec de backend.
 
 ## 6. Confirmación explícita de cambios sensibles (Principio IV)
 
@@ -86,7 +88,7 @@ Technical Context. Formato por entrada: Decisión · Justificación · Alternati
   pondera todos los objetivos elegidos.
 - **Alternativas consideradas**: un único objetivo principal — descartado por reducir la
   personalización que persigue SC-004.
-- **Nota**: cierra el `[NECESITA ACLARACIÓN]` de la HU2 escenario 2 en la spec.
+- **Nota**: la HU2 escenario 2 de la spec ya recoge esta decisión (selección múltiple); no quedan aclaraciones abiertas al respecto.
 
 ## 8. Testing y trazabilidad (Principio VIII)
 

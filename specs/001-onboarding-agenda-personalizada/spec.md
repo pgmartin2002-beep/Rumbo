@@ -35,7 +35,7 @@ Como asistente a un evento, quiero indicar qué busco conseguir (aprender, encon
 
 **Escenarios de aceptación**:
 1. **Dado** que acabo de importar un evento y aún no tengo objetivos definidos, **Cuando** entro por primera vez en el evento, **Entonces** la app me pregunta qué busco conseguir antes de mostrarme cualquier recomendación.
-2. **Dado** que estoy definiendo mis objetivos, **Cuando** selecciono una o varias opciones de la lista (aprender, clientes, empleo, inversores, networking, presentar proyecto, colaboradores, disfrutar), **Entonces** la app guarda mi selección asociada a ese evento. [NECESITA ACLARACIÓN: ¿se permite seleccionar varios objetivos a la vez o solo uno principal por evento?]
+2. **Dado** que estoy definiendo mis objetivos, **Cuando** selecciono una o varias opciones de la lista (aprender, clientes, empleo, inversores, networking, presentar proyecto, colaboradores, disfrutar), **Entonces** la app guarda mi selección asociada a ese evento. La app PERMITE seleccionar varios objetivos a la vez (selección múltiple, mínimo uno); la priorización de la agenda pondera todos los objetivos elegidos.
 3. **Dado** que ya tengo objetivos definidos para un evento, **Cuando** vuelvo a entrar más adelante, **Entonces** puedo consultarlos y modificarlos en cualquier momento antes o durante el evento.
 4. **Dado** que cambio mis objetivos después de tener una agenda generada, **Cuando** confirmo el cambio, **Entonces** la app me avisa de que la agenda se recalculará en función de los nuevos objetivos.
 
@@ -51,7 +51,7 @@ Como asistente con mis objetivos ya definidos, quiero recibir una agenda del eve
 1. **Dado** que tengo un evento importado con sus sesiones y mis objetivos definidos, **Cuando** solicito mi agenda personalizada, **Entonces** la app clasifica cada sesión como imprescindible, opcional o descartable en función de mis objetivos.
 2. **Dado** que mi agenda tiene una sesión marcada como recomendada, **Cuando** consulto el motivo de la recomendación, **Entonces** la app muestra una explicación en lenguaje llano de por qué encaja con mis objetivos (por ejemplo, el tema o las empresas asistentes).
 3. **Dado** que dos sesiones recomendadas coinciden en el mismo horario, **Cuando** genero la agenda, **Entonces** la app señala el conflicto y me indica cuál prioriza según mis objetivos, dejando la otra como alternativa.
-4. **Dado** que dos sesiones recomendadas están en salas distintas con poco tiempo entre ellas, **Cuando** genero la agenda, **Entonces** la app advierte si el tiempo disponible para desplazarme entre salas es insuficiente. [NECESITA ACLARACIÓN: ¿de dónde obtiene la app los tiempos de desplazamiento entre salas — mapa del recinto, estimación manual, u otro origen?]
+4. **Dado** que dos sesiones recomendadas están en salas distintas con poco tiempo entre ellas, **Cuando** genero la agenda, **Entonces** la app advierte si el tiempo disponible para desplazarme entre salas es insuficiente. Los tiempos de desplazamiento entre salas se obtienen a través del proveedor externo de mapas (mismo adaptador que la logística); la fuente concreta y sus credenciales se deciden en la spec de backend, no en esta spec funcional.
 5. **Dado** que ya tengo una agenda generada, **Cuando** modifico mis objetivos o el evento actualiza su programa, **Entonces** puedo volver a generar la agenda y obtener una nueva priorización.
 
 ### Historia de Usuario 4 - Planificador logístico (Prioridad: P2)
@@ -97,7 +97,7 @@ Como asistente que puede tener varios eventos en distintos momentos (uno hoy, ot
 - ¿Qué pasa si el usuario no indica ningún punto de origen para calcular la ruta?
 - ¿Cómo se comporta la app si no hay transporte público disponible cerca del recinto?
 - ¿Cómo se gestiona la logística de un evento que se celebra en varias sedes distintas el mismo día?
-- ¿Qué pasa si el usuario tiene dos eventos en curso al mismo tiempo (fechas solapadas)? [NECESITA ACLARACIÓN: ¿cuál se destaca como "en curso" en la pantalla de inicio, o se muestran ambos igual de destacados?]
+- Si el usuario tiene dos eventos en curso al mismo tiempo (fechas solapadas), la pantalla de inicio los muestra AMBOS en la sección "en curso", ordenados por la hora de inicio de la actividad que corresponde al usuario en cada uno (la más inmediata primero); ninguno oculta al otro.
 - ¿Durante cuánto tiempo permanece un evento cerrado visible en la lista de "Mis eventos" antes de archivarse u ocultarse?
 
 ## Requisitos *(obligatorio)*
@@ -124,7 +124,7 @@ Como asistente que puede tener varios eventos en distintos momentos (uno hoy, ot
 - **FR-018**: El sistema DEBE ofrecer opciones de transporte (público y privado) con sus tiempos estimados.
 - **FR-019**: El sistema DEBE mostrar opciones de aparcamiento cercano al recinto cuando el usuario elige desplazarse en coche.
 - **FR-020**: El sistema DEBE calcular el tiempo necesario para desplazarse entre salas o sedes distintas del evento y advertir cuando el hueco disponible en la agenda es insuficiente.
-- **FR-021**: El sistema DEBE enviar una alerta al usuario cuando detecte tráfico, retrasos en el transporte o cambios de ubicación que afecten a su plan. [NECESITA ACLARACIÓN: ¿qué fuente de datos de tráfico y transporte en tiempo real usará el sistema?]
+- **FR-021**: El sistema DEBE enviar una alerta al usuario cuando detecte tráfico, retrasos en el transporte o cambios de ubicación que afecten a su plan. Los datos de tráfico y transporte en tiempo real se obtienen a través de un proveedor externo consumido desde el backend (nunca desde el cliente, conforme al Principio VI); la elección del proveedor concreto, sus credenciales y cuotas se deciden en la spec de backend.
 - **FR-022**: El sistema DEBE proponer una actualización de la ruta y de la hora de salida recomendada cuando cambie la ubicación de una sesión o sede ya planificada, y solo aplicarla tras la confirmación explícita del usuario (conforme al Principio IV de la constitución: la app propone, el usuario confirma).
 - **FR-023**: El sistema DEBE mostrar, como pantalla de inicio, la lista de todos los eventos guardados por el usuario.
 - **FR-024**: El sistema DEBE clasificar cada evento de la lista como en curso, próximo o cerrado, en función de sus fechas respecto al momento actual.
