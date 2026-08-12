@@ -2,8 +2,18 @@ import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { api } from '../services/api-client.js';
 import type { Alert, MedioTransporte, RouteResult } from '../services/types.js';
-import { ErrorState, Loading, useAsync } from '../components/States.js';
+import { useAsync } from '../components/States.js';
 import { AlertCard } from '../components/AlertCard.js';
+
+const MEDIOS: { id: MedioTransporte; label: string }[] = [
+  { id: 'publico', label: 'Transporte público' },
+  { id: 'coche', label: 'Coche' },
+  { id: 'a_pie', label: 'Andando' },
+];
+
+function hora(iso: string): string {
+  return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+}
 
 export default function Logistics() {
   const { id } = useParams<{ id: string }>();
@@ -42,63 +52,75 @@ export default function Logistics() {
 
   return (
     <section>
-      <h1>Logística</h1>
-      <div className="card">
-        <input
-          placeholder="Punto de origen (casa, hotel, oficina…)"
-          value={origen}
-          onChange={(e) => setOrigen(e.target.value)}
-          style={{ width: '100%' }}
-        />
-        <label style={{ display: 'block', marginTop: 12 }}>
-          Transporte
-          <select value={medio} onChange={(e) => setMedio(e.target.value as MedioTransporte)}>
-            <option value="publico">Público</option>
-            <option value="coche">Coche</option>
-            <option value="a_pie">A pie</option>
-          </select>
-        </label>
-        <button className="btn-primary" onClick={calcular} disabled={loading || !origen}>
-          {loading ? 'Calculando…' : 'Calcular ruta'}
-        </button>
+      <div className="crumb">Logística · hora de salida</div>
+      <h1 className="screen-title">Tu ruta al evento</h1>
+      <p className="screen-sub">Una sola cifra importa: la hora de salida. El resto es apoyo.</p>
+
+      <input
+        className="origin-input"
+        placeholder="Punto de origen (casa, hotel, oficina…)"
+        value={origen}
+        onChange={(e) => setOrigen(e.target.value)}
+      />
+
+      <div className="segmented">
+        {MEDIOS.map((m) => (
+          <button
+            key={m.id}
+            className={`seg ${medio === m.id ? 'on' : ''}`}
+            onClick={() => setMedio(m.id)}
+          >
+            {m.label}
+          </button>
+        ))}
       </div>
 
-      {error && <div className="card state-error">{error}</div>}
+      <button className="cta-btn" onClick={calcular} disabled={loading || !origen}>
+        {loading ? 'Calculando…' : 'Calcular ruta'}
+      </button>
+
+      {error && (
+        <div className="state-error" style={{ marginTop: 14 }}>
+          {error}
+        </div>
+      )}
 
       {result && (
-        <div className="card">
-          <p className="ticket-data">
-            Hora de salida: {new Date(result.ruta.hora_salida_recomendada).toLocaleTimeString()}
-          </p>
-          <p className="ticket-data">Duración estimada: {result.ruta.duracion_estimada} min</p>
-          <h3>Opciones de transporte</h3>
-          <ul>
-            {result.opciones_transporte.map((o) => (
-              <li key={o.medio} className="ticket-data">
-                {o.descripcion} — {o.duracion_min} min
-              </li>
-            ))}
-          </ul>
+        <>
+          <div className="route-card" style={{ marginTop: 16 }}>
+            <div className="route-line">
+              {result.ruta.origen} <span className="arrow">→</span> {result.ruta.destino}
+            </div>
+            <div className="route-sub">{result.ruta.duracion_estimada} min de trayecto</div>
+            <div className="data-attr">Rutas y tráfico: proveedor de mapas</div>
+          </div>
+
           {result.parking.length > 0 && (
-            <>
-              <h3>Aparcamiento</h3>
-              <ul>
-                {result.parking.map((p) => (
-                  <li key={p.nombre} className="ticket-data">
-                    {p.nombre} — {p.distancia_min} min
-                  </li>
-                ))}
-              </ul>
-            </>
-          )}
-          {result.avisos_desplazamiento.length > 0 && (
-            <div className="state-error" style={{ textAlign: 'left' }}>
-              {result.avisos_desplazamiento.map((a, i) => (
-                <p key={i}>⚠️ {a}</p>
+            <div className="parking-card">
+              <div className="pk-title">Aparcamiento cercano</div>
+              {result.parking.map((p) => (
+                <div key={p.nombre} className="pk-row">
+                  <div className="pk-name">{p.nombre}</div>
+                  <div className="pk-dist">{p.distancia_min} min a pie</div>
+                </div>
               ))}
             </div>
           )}
-        </div>
+
+          <div className="depart-block">
+            <div className="depart-time">{hora(result.ruta.hora_salida_recomendada)}</div>
+            <div className="depart-sub">Hora de salida recomendada</div>
+            <div className="route-sub" style={{ marginTop: 6 }}>
+              {result.ruta.duracion_estimada} min de trayecto + margen
+            </div>
+          </div>
+
+          {result.avisos_desplazamiento.length > 0 && (
+            <div className="gap-warning">
+              ⚠️ {result.avisos_desplazamiento.join(' · ')}
+            </div>
+          )}
+        </>
       )}
 
       {!alerts.loading &&

@@ -21,6 +21,24 @@ export interface AgendaDiff {
   salen: string[];
 }
 
+/** Vista enriquecida de un item con los datos de sesión que necesita la UI (pase de embarque). */
+export interface AgendaItemVista extends AgendaItem {
+  sesion: {
+    titulo: string;
+    inicio: string;
+    fin: string;
+    sala: string | null;
+    ponentes: string[];
+  } | null;
+}
+
+export interface AgendaVista {
+  id: string;
+  evento_id: string;
+  items: AgendaItemVista[];
+  generada_en: string;
+}
+
 const PALABRAS_OBJETIVO: Record<Objetivo, string[]> = {
   aprender: ['taller', 'charla', 'keynote', 'formación', 'tutorial', 'aprende'],
   clientes: ['ventas', 'cliente', 'negocio', 'growth', 'demo'],
@@ -91,7 +109,7 @@ export class AgendaService {
     return items;
   }
 
-  async generar(eventoId: string): Promise<AgendaPersonalizada> {
+  async generar(eventoId: string): Promise<AgendaVista> {
     const items = await this.construirItems(eventoId);
     const ahora = new Date().toISOString();
     const agenda = await this.repos.agendas.upsertBy((a) => a.evento_id === eventoId, {
@@ -103,11 +121,51 @@ export class AgendaService {
       progreso_onboarding: 'agenda_generada',
       actualizado_en: ahora,
     });
-    return agenda;
+    return this.enriquecer(agenda);
   }
 
   async obtener(eventoId: string): Promise<AgendaPersonalizada | null> {
     return (await this.repos.agendas.findBy((a) => a.evento_id === eventoId))[0] ?? null;
+  }
+
+  /** Vista enriquecida (con datos de sesión) ordenada cronológicamente para la UI. */
+  async obtenerVista(eventoId: string): Promise<AgendaVista | null> {
+    const agenda = await this.obtener(eventoId);
+    return agenda ? this.enriquecer(agenda) : null;
+  }
+
+  private async enriquecer(agenda: AgendaPersonalizada): Promise<AgendaVista> {
+    const sesiones = await this.repos.sesiones.findBy((s) => s.evento_id === agenda.evento_id);
+    const sesionPorId = new Map(sesiones.map((s) => [s.id, s] as const));
+    const ponentes = await this.repos.ponentes.list();
+    const ponentePorId = new Map(ponentes.map((p) => [p.id, p] as const));
+
+    const items: AgendaItemVista[] = agenda.items.map((it) => {
+      const s = sesionPorId.get(it.sesion_id);
+      return {
+        ...it,
+        sesion: s
+          ? {
+              titulo: s.titulo,
+              inicio: s.inicio,
+              fin: s.fin,
+              sala: s.sala,
+              ponentes: s.ponente_ids
+                .map((pid) => ponentePorId.get(pid)?.nombre)
+                .filter((n): n is string => Boolean(n)),
+            }
+          : null,
+      };
+    });
+
+    // Orden cronológico (design.md pantalla 3: los pases se ordenan por hora, no por prioridad).
+    items.sort((a, b) => {
+      const ta = a.sesion ? new Date(a.sesion.inicio).getTime() : Number.MAX_SAFE_INTEGER;
+      const tb = b.sesion ? new Date(b.sesion.inicio).getTime() : Number.MAX_SAFE_INTEGER;
+      return ta - tb;
+    });
+
+    return { id: agenda.id, evento_id: agenda.evento_id, items, generada_en: agenda.generada_en };
   }
 
   /** Propuesta de recálculo como diff, SIN aplicarla (FR-015, Principio IV). */
@@ -138,7 +196,7 @@ export class AgendaService {
   }
 
   /** Aplica el recálculo solo tras confirmación explícita del usuario (FR-015, Principio IV). */
-  async aplicarRecalculo(eventoId: string): Promise<AgendaPersonalizada> {
+  async aplicarRecalculo(eventoId: string): Promise<AgendaVista> {
     return this.generar(eventoId);
   }
 }

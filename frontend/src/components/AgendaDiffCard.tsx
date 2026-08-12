@@ -15,28 +15,52 @@ export function AgendaDiffCard({
   onDismiss: () => void;
   applying: boolean;
 }) {
-  const sinCambios =
-    diff.suben.length + diff.bajan.length + diff.entran.length + diff.salen.length === 0;
+  const total = diff.suben.length + diff.bajan.length + diff.entran.length + diff.salen.length;
+  const sinCambios = total === 0;
 
   return (
-    <div className="card" role="dialog" aria-label="Propuesta de recálculo de agenda">
-      <h3>Propuesta de nueva agenda</h3>
+    <div className="agenda-diff-card" role="dialog" aria-label="Propuesta de recálculo de agenda">
+      <div className="diff-title">Nueva agenda disponible</div>
       {sinCambios ? (
-        <p>No hay cambios respecto a tu agenda actual.</p>
+        <p className="diff-sub">No hay cambios respecto a tu agenda actual.</p>
       ) : (
-        <ul className="ticket-data">
-          {diff.entran.length > 0 && <li>Entran: {diff.entran.length} sesión(es)</li>}
-          {diff.suben.length > 0 && <li>Suben de prioridad: {diff.suben.length}</li>}
-          {diff.bajan.length > 0 && <li>Bajan de prioridad: {diff.bajan.length}</li>}
-          {diff.salen.length > 0 && <li>Salen: {diff.salen.length}</li>}
-        </ul>
+        <>
+          <p className="diff-sub">
+            Cambiaron tus objetivos. Esto afecta a {total} sesión{total > 1 ? 'es' : ''} — revísalo
+            antes de sustituir tu agenda actual.
+          </p>
+          {diff.entran.length > 0 && (
+            <div className="diff-row">
+              <span className="name">Nuevas sesiones recomendadas</span>
+              <span className="diff-tag new">Entran {diff.entran.length}</span>
+            </div>
+          )}
+          {diff.suben.length > 0 && (
+            <div className="diff-row">
+              <span className="name">Suben de prioridad</span>
+              <span className="diff-tag up">Suben {diff.suben.length}</span>
+            </div>
+          )}
+          {diff.bajan.length > 0 && (
+            <div className="diff-row">
+              <span className="name">Bajan de prioridad</span>
+              <span className="diff-tag down">Bajan {diff.bajan.length}</span>
+            </div>
+          )}
+          {diff.salen.length > 0 && (
+            <div className="diff-row">
+              <span className="name">Dejan de recomendarse</span>
+              <span className="diff-tag out">Salen {diff.salen.length}</span>
+            </div>
+          )}
+        </>
       )}
-      <div style={{ display: 'flex', gap: 8 }}>
-        <button className="btn-primary" onClick={onConfirm} disabled={applying || sinCambios}>
-          {applying ? 'Aplicando…' : 'Confirmar y aplicar'}
+      <div className="diff-actions">
+        <button className="diff-btn apply" onClick={onConfirm} disabled={applying || sinCambios}>
+          {applying ? 'Aplicando…' : 'Aplicar nueva agenda'}
         </button>
-        <button className="btn-secondary" onClick={onDismiss} disabled={applying}>
-          Descartar
+        <button className="diff-btn keep" onClick={onDismiss} disabled={applying}>
+          Mantener la actual
         </button>
       </div>
     </div>

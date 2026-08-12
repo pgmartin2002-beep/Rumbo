@@ -8,7 +8,7 @@ export function registerEventsAgenda(app: FastifyInstance, ctx: AppContext): voi
   });
 
   app.get<{ Params: { id: string } }>('/api/events/:id/agenda', async (request, reply) => {
-    const agenda = await ctx.agendaService.obtener(request.params.id);
+    const agenda = await ctx.agendaService.obtenerVista(request.params.id);
     if (!agenda) return reply.status(404).send({ error: 'no_encontrado', mensaje: 'Sin agenda' });
     return agenda;
   });
