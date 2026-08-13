@@ -5,16 +5,22 @@ import { obtenerHtml } from '../src/integrations/http-fetch.js';
 /**
  * `resolverYValidar` rechaza 127.0.0.1 por ser una dirección privada (correcto en producción).
  * Para poder probar `obtenerHtml` contra un servidor HTTP real sin salir a red externa, se
- * permite aquí, solo para el hop `127.0.0.1` del propio servidor de test, tratarlo como si fuera
- * público; cualquier otro destino (incluidos los saltos de redirect) sigue pasando por la
- * validación SSRF real — es justo lo que T019 necesita comprobar.
+ * permite aquí, solo para el hostname de prueba `servidor-legitimo.test`, tratarlo como si
+ * resolviera a una IP pública (en realidad el propio servidor local); cualquier otro destino
+ * (incluidos los saltos de redirect) sigue pasando por la validación SSRF real — es justo lo que
+ * T019 necesita comprobar. Se usa un hostname (no la IP literal `127.0.0.1` directamente en la
+ * URL) a propósito: si el destino ya es una IP literal, Node se salta el `lookup` personalizado
+ * del `Agent`, y el código que fija esa IP en la conexión (research.md R2) no se llegaría a
+ * ejercitar de verdad.
  */
+const HOSTNAME_SERVIDOR_TEST = 'servidor-legitimo.test';
+
 vi.mock('../src/integrations/ssrf-guard.js', async (importOriginal) => {
   const real = await importOriginal<typeof import('../src/integrations/ssrf-guard.js')>();
   return {
     ...real,
     resolverYValidar: vi.fn(async (hostname: string) => {
-      if (hostname === '127.0.0.1') {
+      if (hostname === HOSTNAME_SERVIDOR_TEST) {
         return { hostname, ip: '127.0.0.1', family: 4 as const };
       }
       return real.resolverYValidar(hostname);
@@ -30,7 +36,8 @@ function levantarServidor(
     server.listen(0, '127.0.0.1', () => {
       const address = server.address();
       const port = typeof address === 'object' && address ? address.port : 0;
-      resolve({ server, url: `http://127.0.0.1:${port}` });
+      // Hostname de prueba (mockeado arriba), no la IP literal — ver comentario del mock.
+      resolve({ server, url: `http://${HOSTNAME_SERVIDOR_TEST}:${port}` });
     });
   });
 }

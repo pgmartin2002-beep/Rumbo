@@ -26,15 +26,28 @@ export interface OpcionesObtenerHtml {
  * research.md R2). `servername` mantiene la verificación TLS/SNI contra el hostname real.
  */
 function crearDispatcherFijado(ip: string, hostnameOriginal: string): Agent {
+  const family = ip.includes(':') ? 6 : 4;
   return new Agent({
     connect: {
       servername: hostnameOriginal,
+      // Node usa Happy Eyeballs (RFC 8305) por defecto: net/tls piden la resolución con
+      // `options.all` y esperan un array de direcciones, no la forma clásica de un único
+      // (address, family). Hay que soportar ambas formas o la conexión falla con
+      // ERR_INVALID_IP_ADDRESS: Invalid IP address: undefined.
       lookup: (
         _hostname: string,
-        _opciones: unknown,
-        callback: (err: NodeJS.ErrnoException | null, address: string, family: number) => void,
+        opciones: { all?: boolean } | undefined,
+        callback: (
+          err: NodeJS.ErrnoException | null,
+          addressOrAddresses: string | { address: string; family: number }[],
+          family?: number,
+        ) => void,
       ) => {
-        callback(null, ip, ip.includes(':') ? 6 : 4);
+        if (opciones?.all) {
+          callback(null, [{ address: ip, family }]);
+        } else {
+          callback(null, ip, family);
+        }
       },
     },
   });
