@@ -212,19 +212,19 @@ independiente de framework).
 `<script>` sin `src` cuyo contenido sea JSON válido — sin ejecutar JavaScript — priorizando
 `application/ld+json` sobre otros candidatos, y sin cambiar su firma pública `(html, maxCaracteres)`.
 
-- [ ] T028 [P] Añadir `extraerDatosEmbebidos(html: string): string[]` en
+- [X] T028 [P] Añadir `extraerDatosEmbebidos(html: string): string[]` en
       `backend/src/services/html-to-text.ts`: por cada `<script>` sin atributo `src`, recorta y
       valida el contenido con `JSON.parse`; descarta si falla o es menor que un tamaño mínimo;
       antepone los que sean `type="application/ld+json"` al resto de candidatos válidos
       (research.md R11)
-- [ ] T029 Integrar `extraerDatosEmbebidos` en `htmlATexto`: concatenar candidatos + texto visible
+- [X] T029 Integrar `extraerDatosEmbebidos` en `htmlATexto`: concatenar candidatos + texto visible
       (candidatos primero) y recortar el conjunto a `maxCaracteres`, igual que antes (depende de
       T028)
-- [ ] T030 [P] Ampliar `backend/tests/html-to-text.test.ts`: script `application/ld+json` válido se
+- [X] T030 [P] Ampliar `backend/tests/html-to-text.test.ts`: script `application/ld+json` válido se
       incluye y se prioriza; script con JSON genérico válido se incluye; script con `src` se
       ignora; script con código JS no-JSON se ignora igual que antes; el conjunto sigue
       respetando `maxCaracteres` (research.md R10) (depende de T029)
-- [ ] T031 Ejecutar `npm run typecheck && npm run lint && npm run test` en `backend/` y la suite E2E
+- [X] T031 Ejecutar `npm run typecheck && npm run lint && npm run test` en `backend/` y la suite E2E
       completa para confirmar que no hay regresión en el pipeline existente (depende de T029)
 
 **Checkpoint**: FR-014 implementada y testeada; sin regresiones en US1/US2/US3.
