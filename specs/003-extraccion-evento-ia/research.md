@@ -57,7 +57,7 @@ pasar de la spec al diseño (Fase 1), tomadas sobre el código ya existente de l
 - **Decisión**: función pura `htmlATexto(html): string` sin dependencias de parsing DOM: elimina
   por completo `<script>`, `<style>` y `<noscript>`, quita el resto de etiquetas, decodifica
   entidades HTML comunes y colapsa espacios en blanco. El resultado se recorta a un máximo de
-  caracteres configurable (`RUMBO_AI_MAX_CHARS`, por defecto 20 000) priorizando el inicio del
+  caracteres configurable (`RUMBO_AI_MAX_CHARS`, por defecto 60 000) priorizando el inicio del
   documento. Es una heurística simple, no una detección semántica de "la sección de agenda"; el
   edge case correspondiente de la spec acepta esta aproximación para el MVP.
 - **Rationale**: evita añadir una dependencia de parsing HTML (`cheerio` u otra) para un MVP en el
@@ -65,6 +65,15 @@ pasar de la spec al diseño (Fase 1), tomadas sobre el código ya existente de l
 - **Alternativas consideradas**: `cheerio` con selectores heurísticos ("agenda", "schedule") para
   aislar la sección relevante — mejora futura razonable, descartada ahora para no añadir una
   dependencia nueva solo para una heurística que tampoco sería fiable de forma genérica.
+- **Limitación conocida (validación manual T026)**: en apps que hidratan la página con
+  JavaScript (p. ej. Next.js), los datos de la agenda pueden viajar dentro de un `<script>` como
+  payload de hidratación (JSON), no como texto visible. `htmlATexto` descarta el contenido de
+  `<script>` por completo (asumiéndolo código, no datos), así que ese caso produce un texto muy
+  corto y sin sesiones aunque el HTML crudo sí contenga los datos — subir `RUMBO_AI_MAX_CHARS` no
+  lo soluciona, porque nunca se llega al límite. Se deja como el mismo edge case ya documentado en
+  `spec.md` ("contenido generado dinámicamente con JavaScript" → fuente ilegible/campos faltantes,
+  recuperación manual); extraer JSON embebido en `<script>` de forma genérica (sin acoplarse a un
+  framework concreto) queda fuera del alcance del MVP.
 
 ## R5 — Presupuesto único de 30 s para fetch + IA (FR-008, SC-003)
 

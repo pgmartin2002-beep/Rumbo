@@ -63,7 +63,7 @@ Abre http://localhost:5173. Si no hay eventos verás el estado de bienvenida.
 | `ANTHROPIC_API_KEY`       | _(ninguna)_      | Clave del motor de IA (feature 003). Sin ella, importar por URL degrada a "fuente ilegible" (ver `specs/003-extraccion-evento-ia/`). |
 | `RUMBO_AI_MODEL`          | `claude-haiku-4-5-20251001` | Modelo de Anthropic Claude usado para extraer eventos desde HTML.   |
 | `RUMBO_AI_MAX_HTML_BYTES` | `2097152` (2 MB)  | Tamaño máximo del HTML leído de la URL antes de cortar la lectura.   |
-| `RUMBO_AI_MAX_CHARS`      | `20000`          | Tamaño máximo del texto (tras limpiar el HTML) enviado a la IA.     |
+| `RUMBO_AI_MAX_CHARS`      | `60000`          | Tamaño máximo del texto (tras limpiar el HTML) enviado a la IA.     |
 
 Copia `backend/.env.example` a `backend/.env` para configurarlas en desarrollo local (se cargan
 automáticamente al arrancar el backend).

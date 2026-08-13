@@ -305,12 +305,18 @@ ejemplo del `Input` de `spec.md`) con una `ANTHROPIC_API_KEY` real:
 - **201**, ~3s de respuesta (SC-003 ✓). `nombre: "The AI Summit London"`, fechas y `ubicacion`
   extraídas correctamente; `fuente_valor` guardado con la URL (FR-010 ✓); ninguna credencial en la
   respuesta ni en logs (FR-009/SC-005 ✓, T027).
-- `campos_faltantes: ["sesiones"]` — la IA no encontró sesiones dentro de los primeros
-  `RUMBO_AI_MAX_CHARS` (20 000) de texto limpiado de esta página en concreto (agenda muy larga);
-  comportamiento esperado del edge case ya documentado en `spec.md`/`research.md` R4 (heurística de
-  recorte por inicio de documento, no detección semántica de la sección de agenda), no un bug. Con
-  una sola URL de muestra no se puede confirmar el 80% de SC-001; sería necesario el corpus de
-  prueba sugerido en el hallazgo G1 del informe de `/speckit-analyze` para medirlo con confianza.
+- `campos_faltantes: ["sesiones"]` — la IA no encontró sesiones. Diagnóstico posterior: **no** era
+  un problema de recorte por tamaño (`RUMBO_AI_MAX_CHARS`) — el texto limpiado de esta página son
+  solo ~2 000 caracteres, muy por debajo del límite de 20 000 que había entonces. La causa real es
+  que esta web (Next.js) hidrata la agenda con JavaScript y los datos viajan como JSON dentro de un
+  `<script>` del HTML crudo (confirmado: la cadena `"session` aparece en el HTML crudo, pero dentro
+  de un `<script>`); `htmlATexto` descarta todo el contenido de `<script>` por asumirlo código, no
+  datos. Subir `RUMBO_AI_MAX_CHARS` no lo soluciona en este sitio concreto. Se documentó como
+  limitación conocida en research.md R4 y se subió igualmente el valor por defecto a `60000` (útil
+  para otras webs con mucho texto visible legítimo) — extraer JSON embebido en `<script>` de forma
+  genérica queda fuera de alcance del MVP. Con una sola URL de muestra no se puede confirmar el 80%
+  de SC-001; sería necesario el corpus de prueba sugerido en el hallazgo G1 del informe de
+  `/speckit-analyze` para medirlo con confianza.
 - **Bug real encontrado y corregido durante esta validación** (no estaba cubierto por los tests
   unitarios, que usaban una IP literal en vez de un hostname): el `lookup` fijado a la IP validada
   por SSRF no soportaba la forma de Happy Eyeballs (`options.all`) que Node usa por defecto al

@@ -49,7 +49,7 @@ nuevos.
 
 **Performance Goals**: Presupuesto total de 30 s (fetch + IA) por importación desde URL (FR-008,
 SC-003, research.md R5); tamaño de HTML acotado a `RUMBO_AI_MAX_HTML_BYTES` (2 MB por defecto) y de
-texto enviado a la IA a `RUMBO_AI_MAX_CHARS` (20 000 por defecto).
+texto enviado a la IA a `RUMBO_AI_MAX_CHARS` (60 000 por defecto).
 
 **Constraints**:
 - Ninguna llamada a la IA ni al motor de extracción ocurre desde el cliente (Principio VI); el

@@ -35,7 +35,7 @@ export interface AppContext {
 
 const MODELO_IA_POR_DEFECTO = 'claude-haiku-4-5-20251001';
 const MAX_HTML_BYTES_POR_DEFECTO = 2 * 1024 * 1024;
-const MAX_CHARS_POR_DEFECTO = 20_000;
+const MAX_CHARS_POR_DEFECTO = 60_000;
 
 /**
  * Construye el motor de IA real si hay clave configurada; si no, degrada de forma controlada
