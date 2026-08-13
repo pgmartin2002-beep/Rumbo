@@ -56,6 +56,8 @@ export interface Evento {
   ubicacion: string | null;
   requisitos_acceso: string | null;
   fuente_importacion: FuenteImportacion;
+  /** URL de origen cuando se importó por el camino real de extracción con IA (feature 003); `null` en el resto de casos. */
+  fuente_valor: string | null;
   progreso_onboarding: ProgresoOnboarding;
   creado_en: ISODateTime;
   actualizado_en: ISODateTime;

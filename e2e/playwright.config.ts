@@ -28,7 +28,14 @@ export default defineConfig({
       url: 'http://localhost:3001/api/health',
       reuseExistingServer: !process.env.CI,
       timeout: 60_000,
-      env: { PORT: '3001', RUMBO_DATA_DIR: dataDir },
+      env: {
+        PORT: '3001',
+        RUMBO_DATA_DIR: dataDir,
+        // Clave no funcional: solo para que el pipeline de extracción por URL (feature 003) no
+        // degrade antes de llegar al bloqueo SSRF (research.md R10) — nunca llega a red real
+        // porque el bloqueo corta la petición antes de invocar a Anthropic.
+        ANTHROPIC_API_KEY: 'e2e-fake-key-do-not-use',
+      },
     },
     {
       command: 'npm --prefix ../frontend run dev',

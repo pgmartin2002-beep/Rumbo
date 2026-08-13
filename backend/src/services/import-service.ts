@@ -3,7 +3,7 @@
  * mapea la fuente a entidades (Evento, Sesión, Ponente, Empresa) y calcula los campos que
  * no se pudieron extraer (FR-006, FR-007).
  */
-import type { EventExtractionAdapter } from '../integrations/event-extraction.js';
+import { esUrlPublicaCandidata, type EventExtractionAdapter } from '../integrations/event-extraction.js';
 import type { Repositories } from '../repositories/index.js';
 import type { Evento, FuenteImportacion, RolEmpresa } from '../models/index.js';
 import { ApiError } from '../api/error-handler.js';
@@ -40,6 +40,7 @@ export class ImportService {
       ubicacion: datos.ubicacion,
       requisitos_acceso: datos.requisitos_acceso,
       fuente_importacion: fuente,
+      fuente_valor: esUrlPublicaCandidata(payload) ? payload.trim() : null,
       progreso_onboarding: 'importado',
       creado_en: ahora,
       actualizado_en: ahora,

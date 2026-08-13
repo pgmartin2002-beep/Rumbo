@@ -16,6 +16,10 @@
 - Q: ¿Tiempo máximo total de la importación desde URL (fetch + extracción IA) antes de darla por fallida? → A: 30 segundos.
 - Q: ¿Restringir las URLs a http/https públicos y bloquear destinos internos/privados (SSRF)? → A: Sí; sólo http/https público, bloquear localhost/IPs privadas/metadatos de nube y tratarlas como fuente ilegible.
 
+### Session 2026-08-13
+
+- Q: Para webs cuya agenda se genera con JavaScript, en vez de renderizar JS (descartado por coste/riesgo), ¿el sistema debe aprovechar los datos que el propio HTML crudo ya incluye dentro de bloques `<script>` (p. ej. el payload de hidratación de frameworks como Next.js), y si es así, buscando solo patrones de frameworks conocidos o de forma genérica? → A: Sí, de forma genérica: cualquier bloque `<script>` sin `src` cuyo contenido parezca JSON se conserva como texto candidato para la IA, sin acoplarse a un framework concreto. Sigue sin ejecutarse JavaScript en ningún momento; esto no sustituye ni contradice el render JS descartado arriba, es una fuente adicional de datos ya presente en el HTML crudo.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Importar un evento pegando la URL de su web (Priority: P1)
@@ -92,8 +96,12 @@ antes, sin pasar por el motor de IA.
   accede a esos destinos (prevención de SSRF).
 - ¿Qué ocurre si la agenda está paginada o repartida en varias páginas, o se genera
   dinámicamente con JavaScript? → Para el MVP se extrae del HTML crudo de la URL
-  proporcionada; si el contenido dinámico no está en ese HTML, se trata como ilegible y
-  el usuario completa a mano.
+  proporcionada, incluyendo los bloques de datos que el propio HTML ya incluya
+  embebidos en `<script>` aunque el navegador los use para renderizar con JavaScript
+  (FR-014); si ni el texto visible ni esos bloques contienen el contenido dinámico
+  (p. ej. porque la página lo pide con una llamada de red posterior, ya en el
+  navegador, y no lo trae en el HTML inicial), se trata como ilegible y el usuario
+  completa a mano.
 - ¿Qué ocurre si el contenido es muy largo y excede el límite del motor de IA? → El
   sistema acota el contenido enviado y prioriza la parte de agenda; lo no extraído
   queda como campo faltante.
@@ -113,8 +121,10 @@ antes, sin pasar por el motor de IA.
 - **FR-002**: El sistema DEBE obtener el contenido de la URL a través de la capa de
   backend/servicios, nunca desde el cliente móvil (Principio VI). Para el MVP se obtiene
   el HTML tal cual devuelve la página, sin renderizar JavaScript en el servidor; las
-  webs cuya agenda sólo se genera con JavaScript en el navegador quedan como fuente
-  ilegible con recuperación manual (render JS es mejora futura).
+  webs cuya agenda sólo se genera con JavaScript en el navegador y no exponen sus datos
+  de ninguna otra forma dentro del HTML crudo (ver FR-014) quedan como fuente ilegible con
+  recuperación manual (render JS es mejora futura, descartada por coste y riesgo de
+  seguridad frente al beneficio para este MVP, aclaración de sesión 2026-08-13).
 - **FR-003**: El sistema DEBE usar un motor de IA para transformar el contenido obtenido
   en una estructura de evento: nombre, fecha de inicio, fecha de fin, ubicación,
   sesiones (título, inicio, fin, sala, tema) y ponentes por sesión cuando estén
@@ -147,13 +157,24 @@ antes, sin pasar por el motor de IA.
   bloquear el acceso a destinos internos o privados (localhost, rangos de IP privados,
   direcciones de metadatos de proveedores de nube), tratándolos como fuente ilegible,
   para prevenir peticiones del servidor a recursos internos (SSRF).
+- **FR-014**: Además del texto visible de la página, el sistema DEBE aprovechar los
+  bloques de datos estructurados que la propia página incluya embebidos en el HTML
+  crudo (p. ej. el payload de datos que algunos frameworks de renderizado modernos
+  insertan en un `<script>` para pintar la página en el navegador), como entrada
+  adicional para el motor de IA, sin ejecutar JavaScript en ningún momento (aclaración
+  de sesión 2026-08-13). Esta búsqueda DEBE ser genérica (cualquier `<script>` sin
+  origen externo cuyo contenido parezca JSON), sin acoplarse a un framework concreto.
+  Si ni el texto visible ni estos bloques contienen datos suficientes, la fuente se
+  sigue tratando como ilegible (FR-006).
 
 ### Key Entities *(include if feature involves data)*
 
 - **Fuente de importación (URL)**: Representa la dirección pública desde la que se
   importa; atributos: tipo (url), valor de la dirección, momento de importación.
 - **Contenido obtenido**: Representación textual del contenido de la página usada como
-  entrada del motor de IA; es transitorio, no necesita persistencia a largo plazo.
+  entrada del motor de IA; incluye tanto el texto visible como los bloques de datos
+  estructurados embebidos en `<script>` detectados de forma genérica (FR-014); es
+  transitorio, no necesita persistencia a largo plazo.
 - **Datos de evento extraídos**: Estructura intermedia con nombre, fechas, ubicación,
   requisitos de acceso, sesiones y ponentes; es la misma forma que ya consume el
   servicio de importación del 001.
