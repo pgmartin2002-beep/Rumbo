@@ -126,3 +126,39 @@ export interface AlertaLogistica {
   generada_en: ISODateTime;
   propuesta_hora_salida: ISODateTime | null;
 }
+
+// --- Entidades de la feature 002 (preparar interacciones y vivir el evento) ---
+
+export type OrigenPregunta = 'sugerida' | 'manual';
+
+export interface PreguntaPreparada {
+  id: UUID;
+  sesion_id: UUID;
+  texto: string;
+  origen: OrigenPregunta;
+  creado_en: ISODateTime;
+}
+
+export type OrigenNota = 'texto' | 'voz';
+export type EstadoTranscripcion = 'pendiente' | 'completada';
+
+export interface Nota {
+  id: UUID;
+  evento_id: UUID;
+  sesion_id: UUID | null;
+  contenido: string;
+  origen: OrigenNota;
+  estado_transcripcion: EstadoTranscripcion | null;
+  creado_en: ISODateTime;
+  actualizado_en: ISODateTime;
+}
+
+export interface Contacto {
+  id: UUID;
+  evento_id: UUID;
+  sesion_id: UUID | null;
+  nombre: string;
+  nota: string | null;
+  creado_en: ISODateTime;
+  actualizado_en: ISODateTime;
+}

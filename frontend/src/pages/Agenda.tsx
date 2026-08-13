@@ -80,26 +80,31 @@ export default function AgendaPage() {
 
       {data.items.map((item) => (
         <div key={item.sesion_id}>
-          <div className={`pass ${item.prioridad === 'descartable' ? '' : ''}`}>
-            <div className="pass-top">
-              <div className="pass-time">{franja(item)}</div>
-              <div className="pass-name">{item.sesion?.titulo ?? 'Sesión'}</div>
-              {item.sesion?.ponentes.length ? (
-                <div className="pass-room">{item.sesion.ponentes.join(', ')}</div>
-              ) : (
-                <div className="pass-room">Sin ponente asignado</div>
-              )}
+          <Link
+            to={`/eventos/${id}/agenda/${item.sesion_id}`}
+            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+          >
+            <div className={`pass ${item.prioridad === 'descartable' ? '' : ''}`}>
+              <div className="pass-top">
+                <div className="pass-time">{franja(item)}</div>
+                <div className="pass-name">{item.sesion?.titulo ?? 'Sesión'}</div>
+                {item.sesion?.ponentes.length ? (
+                  <div className="pass-room">{item.sesion.ponentes.join(', ')}</div>
+                ) : (
+                  <div className="pass-room">Sin ponente asignado</div>
+                )}
+              </div>
+              <div className="perf" />
+              <div className="pass-bottom">
+                <span
+                  className={`stamp ${STAMP[item.prioridad]}${item.prioridad === 'descartable' ? ' dim' : ''}`}
+                >
+                  {STAMP_LABEL[item.prioridad]}
+                </span>
+                <span className="pass-reason">{item.motivo_recomendacion}</span>
+              </div>
             </div>
-            <div className="perf" />
-            <div className="pass-bottom">
-              <span
-                className={`stamp ${STAMP[item.prioridad]}${item.prioridad === 'descartable' ? ' dim' : ''}`}
-              >
-                {STAMP_LABEL[item.prioridad]}
-              </span>
-              <span className="pass-reason">{item.motivo_recomendacion}</span>
-            </div>
-          </div>
+          </Link>
           {item.en_conflicto && item.es_alternativa_de && (
             <div className="conflict-note">
               Conflicto de horario: esta sesión queda como alternativa de otra que se solapa en tu

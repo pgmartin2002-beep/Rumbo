@@ -10,6 +10,9 @@ import { registerEventsAgenda } from './routes/events-agenda.js';
 import { registerEventsAgendaRecalc } from './routes/events-agenda-recalc.js';
 import { registerEventsRoute } from './routes/events-route.js';
 import { registerEventsAlerts } from './routes/events-alerts.js';
+import { registerSessionsQuestions } from './routes/sessions-questions.js';
+import { registerEventsNotes } from './routes/events-notes.js';
+import { registerEventsContacts } from './routes/events-contacts.js';
 
 export interface BuildAppOptions {
   dataDir?: string;
@@ -40,6 +43,11 @@ export function buildApp(options: BuildAppOptions = {}): FastifyInstance {
   // Historia 4 (Logística)
   registerEventsRoute(app, ctx);
   registerEventsAlerts(app, ctx);
+
+  // Feature 002 — Historia 1 (Preguntas), Historia 3 (Notas), Historia 4 (Personas)
+  registerSessionsQuestions(app, ctx);
+  registerEventsNotes(app, ctx);
+  registerEventsContacts(app, ctx);
 
   return app;
 }

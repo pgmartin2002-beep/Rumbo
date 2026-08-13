@@ -99,6 +99,45 @@ export interface Alert {
   propuesta_hora_salida: string | null;
 }
 
+export type OrigenPregunta = 'sugerida' | 'manual';
+
+export interface Pregunta {
+  id: string;
+  sesion_id: string;
+  texto: string;
+  origen: OrigenPregunta;
+  creado_en: string;
+}
+
+export type OrigenNota = 'texto' | 'voz';
+export type EstadoTranscripcion = 'pendiente' | 'completada';
+
+export interface Nota {
+  id: string;
+  evento_id: string;
+  sesion_id: string | null;
+  contenido: string;
+  origen: OrigenNota;
+  estado_transcripcion: EstadoTranscripcion | null;
+  creado_en: string;
+  actualizado_en: string;
+}
+
+export interface Contacto {
+  id: string;
+  evento_id: string;
+  sesion_id: string | null;
+  nombre: string;
+  nota: string | null;
+  creado_en: string;
+  actualizado_en: string;
+}
+
+export interface ContactoConDuplicados {
+  contacto: Contacto;
+  posibles_duplicados: { id: string; nombre: string }[];
+}
+
 export const OBJETIVOS: { id: Objetivo; label: string }[] = [
   { id: 'aprender', label: 'Aprender sobre un tema' },
   { id: 'clientes', label: 'Encontrar clientes' },
