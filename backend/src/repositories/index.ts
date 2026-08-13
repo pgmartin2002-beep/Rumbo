@@ -7,10 +7,13 @@ import { JsonRepository } from './json-repository.js';
 import type {
   AgendaPersonalizada,
   AlertaLogistica,
+  Contacto,
   EmpresaParticipante,
   Evento,
+  Nota,
   PerfilObjetivos,
   Ponente,
+  PreguntaPreparada,
   Ruta,
   Sesion,
 } from '../models/index.js';
@@ -24,6 +27,9 @@ export interface Repositories {
   agendas: JsonRepository<AgendaPersonalizada>;
   rutas: JsonRepository<Ruta>;
   alertas: JsonRepository<AlertaLogistica>;
+  preguntas: JsonRepository<PreguntaPreparada>;
+  notas: JsonRepository<Nota>;
+  contactos: JsonRepository<Contacto>;
 }
 
 export function createRepositories(dataDir?: string): Repositories {
@@ -37,5 +43,8 @@ export function createRepositories(dataDir?: string): Repositories {
     agendas: new JsonRepository<AgendaPersonalizada>('agendas', dir),
     rutas: new JsonRepository<Ruta>('rutas', dir),
     alertas: new JsonRepository<AlertaLogistica>('alertas', dir),
+    preguntas: new JsonRepository<PreguntaPreparada>('preguntas', dir),
+    notas: new JsonRepository<Nota>('notas', dir),
+    contactos: new JsonRepository<Contacto>('contactos', dir),
   };
 }

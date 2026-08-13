@@ -1,10 +1,17 @@
 # Rumbo
 
 PWA móvil que ayuda a quien asiste a un evento a **importarlo**, **definir sus objetivos**,
-recibir una **agenda priorizada** y **planificar la logística** (ruta y hora de salida).
+recibir una **agenda priorizada**, **planificar la logística** (ruta y hora de salida), **preparar
+preguntas** por sesión, **vivir el evento** con un modo simplificado y **capturar notas y
+contactos** en el momento.
 
-Este repo implementa la Feature 001 — _Onboarding del evento y Agenda personalizada por objetivos_
-(ver `specs/001-onboarding-agenda-personalizada/`).
+Este repo implementa dos features:
+
+- Feature 001 — _Onboarding del evento y Agenda personalizada por objetivos_
+  (ver `specs/001-onboarding-agenda-personalizada/`).
+- Feature 002 — _Preparar interacciones y vivir el evento_: preguntas por sesión, modo
+  simplificado ("qué toca ahora y dónde"), notas de texto/voz y contactos, con captura sin
+  conexión (ver `specs/002-interacciones-y-evento/`).
 
 ## Arquitectura
 
@@ -13,7 +20,7 @@ Monorepo con tres paquetes:
 | Carpeta     | Qué es                                              | Stack                                   |
 | ----------- | --------------------------------------------------- | --------------------------------------- |
 | `frontend/` | PWA instalable (única vía de acceso a datos)        | React 18 + Vite + TypeScript + PWA      |
-| `backend/`  | BFF: orquesta integraciones externas (extracción, mapas) | Node.js + Fastify + TypeScript     |
+| `backend/`  | BFF: orquesta integraciones externas (extracción, mapas, generación de preguntas, transcripción de voz) | Node.js + Fastify + TypeScript |
 | `e2e/`      | Validación end-to-end del quickstart                | Playwright                              |
 
 - **Persistencia (MVP)**: ficheros JSON en `backend/data/` (sin base de datos). La capa de
@@ -69,7 +76,10 @@ npx playwright test
 
 Los tests E2E cubren los 6 escenarios de `specs/001-onboarding-agenda-personalizada/quickstart.md`
 (importar, objetivos, agenda priorizada con conflictos, recálculo con confirmación explícita,
-logística y "Mis eventos"), incluida la comprobación del Principio VI (sin llamadas externas).
+logística y "Mis eventos"), incluida la comprobación del Principio VI (sin llamadas externas), y
+los 4 escenarios de `specs/002-interacciones-y-evento/quickstart.md` (preguntas por sesión, modo
+simplificado con solape de sesiones, notas con captura offline y contactos con detección de
+duplicados).
 
 ## Desarrollo dirigido por especificación (Spec Kit)
 

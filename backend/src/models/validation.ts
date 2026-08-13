@@ -85,3 +85,30 @@ export function validarMedioTransporte(medio: unknown): asserts medio is MedioTr
     `Medio de transporte no soportado: ${String(medio)}`,
   );
 }
+
+/** Una pregunta manual requiere texto no vacío (FR-003). */
+export function validarTextoPregunta(texto: unknown): asserts texto is string {
+  assert(
+    typeof texto === 'string' && texto.trim().length > 0,
+    'pregunta_invalida',
+    'El texto de la pregunta no puede estar vacío',
+  );
+}
+
+/** Una nota de texto (o una transcripción ya completada) requiere contenido no vacío (FR-008). */
+export function validarContenidoNota(contenido: unknown): asserts contenido is string {
+  assert(
+    typeof contenido === 'string' && contenido.trim().length > 0,
+    'contenido_vacio',
+    'El contenido de la nota no puede estar vacío',
+  );
+}
+
+/** Un contacto solo exige nombre; la nota rápida es opcional (FR-011, aclaración 2026-08-12). */
+export function validarNombreContacto(nombre: unknown): asserts nombre is string {
+  assert(
+    typeof nombre === 'string' && nombre.trim().length > 0,
+    'nombre_requerido',
+    'El nombre del contacto es obligatorio',
+  );
+}

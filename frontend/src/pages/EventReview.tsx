@@ -68,9 +68,28 @@ export default function EventReview() {
       </div>
 
       <div className="cta-bottom">
+        {data.estado_derivado === 'en_curso' && (
+          <Link to={`/eventos/${id}/ahora`} style={{ textDecoration: 'none' }}>
+            <button className="cta-btn" style={{ marginBottom: 10 }}>
+              Modo simplificado →
+            </button>
+          </Link>
+        )}
         <Link to={`/eventos/${id}/objetivos`} style={{ textDecoration: 'none' }}>
           <button className="cta-btn">Definir mis objetivos →</button>
         </Link>
+        <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+          <Link to={`/eventos/${id}/notas`} style={{ textDecoration: 'none', flex: 1 }}>
+            <button className="btn-secondary" style={{ width: '100%' }}>
+              Notas
+            </button>
+          </Link>
+          <Link to={`/eventos/${id}/personas`} style={{ textDecoration: 'none', flex: 1 }}>
+            <button className="btn-secondary" style={{ width: '100%' }}>
+              Personas
+            </button>
+          </Link>
+        </div>
         <button
           className="btn-secondary"
           style={{ width: '100%', marginTop: 10 }}

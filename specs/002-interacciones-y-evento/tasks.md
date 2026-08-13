@@ -34,7 +34,7 @@ No se crean paquetes nuevos.
 
 **Purpose**: Confirmar una base limpia antes de tocar código (sin dependencias nuevas, ver research.md).
 
-- [ ] T001 Ejecutar `cd backend && npm run typecheck && npm run lint` y
+- [X] T001 Ejecutar `cd backend && npm run typecheck && npm run lint` y
       `cd frontend && npm run typecheck && npm run lint` para confirmar que el estado actual del
       repo (feature 001) está limpio antes de empezar
 
@@ -50,11 +50,11 @@ historia la duplica.
 **⚠️ CRITICAL**: US2, US3 y US4 no deben empezar hasta que esta fase esté completa. US1 no depende
 de esta fase y podría empezar en paralelo si hay más de una persona trabajando.
 
-- [ ] T002 [P] Crear `frontend/src/services/active-session.ts`: función pura
+- [X] T002 [P] Crear `frontend/src/services/active-session.ts`: función pura
       `sesionActiva(agenda: AgendaVista, ahora: Date)` que calcula la sesión activa, el hueco o el
       "evento no activo" (FR-005–FR-007) y resuelve solapes quedándose con la de mayor `prioridad`
       entre las que no están marcadas `es_alternativa_de` (FR-018), según research.md R5
-- [ ] T003 [P] Crear `frontend/src/services/offline-store.ts`: envoltorio de IndexedDB nativo con
+- [X] T003 [P] Crear `frontend/src/services/offline-store.ts`: envoltorio de IndexedDB nativo con
       (a) cola de notas/contactos pendientes de sincronizar con `id` generado en cliente, (b) cache
       de la última `AgendaVista` obtenida, (c) almacenamiento de audio pendiente de transcripción, y
       una función `sincronizarPendientes()` que se dispara en `window.addEventListener('online', …)`
@@ -74,33 +74,33 @@ muestra preguntas sugeridas, sin depender de notas ni contactos (spec.md Histori
 
 ### Implementation for User Story 1
 
-- [ ] T004 [P] [US1] Añadir `interface PreguntaPreparada` y `type OrigenPregunta = 'sugerida' | 'manual'`
+- [X] T004 [P] [US1] Añadir `interface PreguntaPreparada` y `type OrigenPregunta = 'sugerida' | 'manual'`
       en `backend/src/models/index.ts` (data-model.md)
-- [ ] T005 [P] [US1] Añadir `validarTextoPregunta` (no vacío) en `backend/src/models/validation.ts`
-- [ ] T006 [US1] Añadir `preguntas: JsonRepository<PreguntaPreparada>` a `createRepositories` en
+- [X] T005 [P] [US1] Añadir `validarTextoPregunta` (no vacío) en `backend/src/models/validation.ts`
+- [X] T006 [US1] Añadir `preguntas: JsonRepository<PreguntaPreparada>` a `createRepositories` en
       `backend/src/repositories/index.ts` (depende de T004)
-- [ ] T007 [P] [US1] Crear `QuestionGenerationAdapter` (interfaz) y `StubQuestionGenerationAdapter`
+- [X] T007 [P] [US1] Crear `QuestionGenerationAdapter` (interfaz) y `StubQuestionGenerationAdapter`
       en `backend/src/integrations/question-generation.ts`: devuelve `null` si la sesión no tiene
       `tema`; si tiene, devuelve un conjunto determinista de preguntas generales y técnicas
       (research.md R2)
-- [ ] T008 [US1] Crear `QuestionsService` en `backend/src/services/questions-service.ts` con
+- [X] T008 [US1] Crear `QuestionsService` en `backend/src/services/questions-service.ts` con
       `listar(sesionId)`, `generar(sesionId)` (borra las `origen: 'sugerida'` anteriores de esa
       sesión, llama al adaptador, lanza `ApiError(422, 'informacion_insuficiente', …)` si el
       adaptador devuelve `null`) y `agregarManual(sesionId, texto)` (depende de T006, T007)
-- [ ] T009 [US1] Crear rutas en `backend/src/api/routes/sessions-questions.ts`:
+- [X] T009 [US1] Crear rutas en `backend/src/api/routes/sessions-questions.ts`:
       `GET /api/events/:id/sesiones/:sesionId/preguntas`,
       `POST /api/events/:id/sesiones/:sesionId/preguntas/generar`,
       `POST /api/events/:id/sesiones/:sesionId/preguntas` (contracts/api.md; depende de T008)
-- [ ] T010 [US1] Registrar `QuestionsService` y el adaptador en `backend/src/context.ts`, y las
+- [X] T010 [US1] Registrar `QuestionsService` y el adaptador en `backend/src/context.ts`, y las
       rutas nuevas en `backend/src/api/app.ts` (depende de T009)
-- [ ] T011 [P] [US1] Crear `frontend/src/pages/SessionQuestions.tsx`: lista de preguntas
+- [X] T011 [P] [US1] Crear `frontend/src/pages/SessionQuestions.tsx`: lista de preguntas
       (sugeridas + manuales), botón "Regenerar", formulario de pregunta manual, y tarjeta de aviso
       cuando el backend responde `informacion_insuficiente` (reutilizar `.illegible-card` de
       `tokens.css` como referencia visual de aviso). Usar `useAsync`/`Loading`/`ErrorState` de
       `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
-- [ ] T012 [US1] Añadir la ruta `/eventos/:id/agenda/:sesionId` en `frontend/src/App.tsx` y enlazar
+- [X] T012 [US1] Añadir la ruta `/eventos/:id/agenda/:sesionId` en `frontend/src/App.tsx` y enlazar
       cada tarjeta `.pass` de `frontend/src/pages/Agenda.tsx` a `SessionQuestions` (depende de T011)
-- [ ] T013 [P] [US1] Crear `e2e/tests/preguntas.spec.ts` cubriendo el Escenario 1 de quickstart.md
+- [X] T013 [P] [US1] Crear `e2e/tests/preguntas.spec.ts` cubriendo el Escenario 1 de quickstart.md
       (generar, regenerar, manual, información insuficiente) (depende de T010, T012)
 
 **Checkpoint**: US1 completa y comprobable de forma independiente.
@@ -118,19 +118,19 @@ notas ni contactos (spec.md Historia 2). No requiere endpoint de backend nuevo (
 
 ### Implementation for User Story 2
 
-- [ ] T014 [P] [US2] Crear `frontend/src/pages/SimplifiedMode.tsx`: usa `active-session.ts` (T002)
+- [X] T014 [P] [US2] Crear `frontend/src/pages/SimplifiedMode.tsx`: usa `active-session.ts` (T002)
       sobre la agenda cacheada por `offline-store.ts` (T003); un `setInterval` de 30s reevalúa la
       sesión activa sin red; renderiza los 4 estados de la Historia 2 (sesión activa con sala, hueco
       con próxima actividad, evento no activo con primera/última actividad, y el caso de solape
       resuelto por prioridad de FR-018). Usar `useAsync`/`Loading`/`ErrorState` de
       `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
-- [ ] T015 [US2] En `SimplifiedMode.tsx`, al montar: si hay conexión, pedir
+- [X] T015 [US2] En `SimplifiedMode.tsx`, al montar: si hay conexión, pedir
       `GET /api/events/:id/agenda` y guardar el resultado con `offline-store.ts`; si no hay
       conexión, usar la última agenda cacheada (depende de T014, T003)
-- [ ] T016 [US2] Añadir la ruta `/eventos/:id/ahora` en `frontend/src/App.tsx` y un CTA destacado
+- [X] T016 [US2] Añadir la ruta `/eventos/:id/ahora` en `frontend/src/App.tsx` y un CTA destacado
       "Modo simplificado →" en `frontend/src/pages/EventReview.tsx` cuando `estado_derivado` sea
       `en_curso` (depende de T014)
-- [ ] T017 [P] [US2] Crear `e2e/tests/modo-simplificado.spec.ts` cubriendo el Escenario 2 de
+- [X] T017 [P] [US2] Crear `e2e/tests/modo-simplificado.spec.ts` cubriendo el Escenario 2 de
       quickstart.md, incluido el caso de solape (depende de T016)
 
 **Checkpoint**: US1 y US2 funcionan de forma independiente.
@@ -147,39 +147,39 @@ comprobar que quedan asociadas a esa sesión, sin depender de contactos (spec.md
 
 ### Implementation for User Story 3
 
-- [ ] T018 [P] [US3] Añadir `interface Nota`, `type OrigenNota = 'texto' | 'voz'` y
+- [X] T018 [P] [US3] Añadir `interface Nota`, `type OrigenNota = 'texto' | 'voz'` y
       `type EstadoTranscripcion = 'pendiente' | 'completada'` en `backend/src/models/index.ts`
       (data-model.md)
-- [ ] T019 [P] [US3] Añadir `validarContenidoNota` (no vacío para texto/transcripción completada) en
+- [X] T019 [P] [US3] Añadir `validarContenidoNota` (no vacío para texto/transcripción completada) en
       `backend/src/models/validation.ts`
-- [ ] T020 [US3] Añadir `notas: JsonRepository<Nota>` a `createRepositories` en
+- [X] T020 [US3] Añadir `notas: JsonRepository<Nota>` a `createRepositories` en
       `backend/src/repositories/index.ts` (depende de T018)
-- [ ] T021 [P] [US3] Crear `VoiceTranscriptionAdapter` (interfaz) y
+- [X] T021 [P] [US3] Crear `VoiceTranscriptionAdapter` (interfaz) y
       `StubVoiceTranscriptionAdapter` en `backend/src/integrations/voice-transcription.ts`: recibe
       el payload de audio y devuelve el texto transcrito o `null` si no es fiable (research.md R3)
-- [ ] T022 [US3] Crear `NotesService` en `backend/src/services/notes-service.ts` con
+- [X] T022 [US3] Crear `NotesService` en `backend/src/services/notes-service.ts` con
       `listar(eventoId)`, `crear({evento_id, sesion_id, origen, contenido?, audio?})` (si
       `origen: 'voz'`, llama al adaptador; si devuelve `null`, guarda con `contenido: ''` y
       `estado_transcripcion: 'pendiente'` y responde 422 `transcripcion_no_fiable`),
       `editar(notaId, {contenido?, sesion_id?})` y `eliminar(notaId)` (depende de T020, T021)
-- [ ] T023 [US3] Crear rutas en `backend/src/api/routes/events-notes.ts`:
+- [X] T023 [US3] Crear rutas en `backend/src/api/routes/events-notes.ts`:
       `GET/POST /api/events/:id/notas`, `PATCH/DELETE /api/events/:id/notas/:notaId`
       (contracts/api.md; depende de T022)
-- [ ] T024 [US3] Registrar `NotesService` y el adaptador en `backend/src/context.ts`, y las rutas en
+- [X] T024 [US3] Registrar `NotesService` y el adaptador en `backend/src/context.ts`, y las rutas en
       `backend/src/api/app.ts` (depende de T023)
-- [ ] T025 [P] [US3] Crear `frontend/src/pages/Notes.tsx`: lista de notas con su sesión o "evento en
+- [X] T025 [P] [US3] Crear `frontend/src/pages/Notes.tsx`: lista de notas con su sesión o "evento en
       general", crear nota de texto, grabar nota de voz con la Web API `MediaRecorder`, editar,
       eliminar y reasignar la sesión de una nota vinculada al evento en general. Al crear una nota,
       resolver el `sesion_id` actual con `sesionActiva()` de `active-session.ts` (T002) sobre la
       agenda cacheada por `offline-store.ts` (T003) antes de llamar a la API (research.md R7)
       (depende de T002, T003). Usar `useAsync`/`Loading`/`ErrorState` de
       `frontend/src/components/States.tsx` para los estados de carga/error (Principio VIII)
-- [ ] T026 [US3] Integrar `offline-store.ts` (T003) en `Notes.tsx`: si `api-client.ts` lanza un
+- [X] T026 [US3] Integrar `offline-store.ts` (T003) en `Notes.tsx`: si `api-client.ts` lanza un
       error de red (`ApiClientError` con `codigo: 'red'`) al crear, encolar la nota localmente y
       mostrarla como "pendiente de sincronizar"; sincronizar la cola al reconectar (depende de T025, T003)
-- [ ] T027 [US3] Añadir la ruta `/eventos/:id/notas` en `frontend/src/App.tsx` y un enlace desde
+- [X] T027 [US3] Añadir la ruta `/eventos/:id/notas` en `frontend/src/App.tsx` y un enlace desde
       `EventReview.tsx` y `SimplifiedMode.tsx` (depende de T025)
-- [ ] T028 [P] [US3] Crear `e2e/tests/notas.spec.ts` cubriendo el Escenario 3 de quickstart.md,
+- [X] T028 [P] [US3] Crear `e2e/tests/notas.spec.ts` cubriendo el Escenario 3 de quickstart.md,
       incluido el caso offline (modo avión) (depende de T024, T027)
 
 **Checkpoint**: US1, US2 y US3 funcionan de forma independiente.
@@ -197,40 +197,40 @@ nota y su contexto, sin depender de notas de sesión ni de seguimiento (spec.md 
 
 ### Implementation for User Story 4
 
-- [ ] T029 [P] [US4] Añadir `interface Contacto` en `backend/src/models/index.ts` (`nombre`
+- [X] T029 [P] [US4] Añadir `interface Contacto` en `backend/src/models/index.ts` (`nombre`
       obligatorio, `nota: string | null` opcional; data-model.md)
-- [ ] T030 [P] [US4] Añadir `validarNombreContacto` (no vacío) en `backend/src/models/validation.ts`
-- [ ] T031 [US4] Añadir `contactos: JsonRepository<Contacto>` a `createRepositories` en
+- [X] T030 [P] [US4] Añadir `validarNombreContacto` (no vacío) en `backend/src/models/validation.ts`
+- [X] T031 [US4] Añadir `contactos: JsonRepository<Contacto>` a `createRepositories` en
       `backend/src/repositories/index.ts` (depende de T029)
-- [ ] T032 [P] [US4] Crear `backend/src/services/name-matching.ts` con `normalizar(nombre)`,
+- [X] T032 [P] [US4] Crear `backend/src/services/name-matching.ts` con `normalizar(nombre)`,
       `tokensOrdenados(nombre)`, `distanciaLevenshtein(a, b)` y `esPosibleDuplicado(a, b)` según el
       algoritmo de research.md R4
-- [ ] T033 [US4] Crear `ContactsService` en `backend/src/services/contacts-service.ts` con
+- [X] T033 [US4] Crear `ContactsService` en `backend/src/services/contacts-service.ts` con
       `listar(eventoId)`, `crear({evento_id, sesion_id, nombre, nota?})` (calcula
       `posibles_duplicados` contra los contactos existentes del evento con T032, sin bloquear el
       guardado), `editar(contactoId, {nombre?, nota?})` y `fusionar(destinoId, origenId)` (combina
       notas no vacías, conserva `nombre`/`sesion_id` del destino, elimina el origen) (depende de
       T031, T032)
-- [ ] T034 [US4] Crear rutas en `backend/src/api/routes/events-contacts.ts`:
+- [X] T034 [US4] Crear rutas en `backend/src/api/routes/events-contacts.ts`:
       `GET/POST /api/events/:id/contactos`, `PATCH /api/events/:id/contactos/:contactoId`,
       `POST /api/events/:id/contactos/:contactoId/fusionar` (contracts/api.md; depende de T033)
-- [ ] T035 [US4] Registrar `ContactsService` en `backend/src/context.ts` y las rutas en
+- [X] T035 [US4] Registrar `ContactsService` en `backend/src/context.ts` y las rutas en
       `backend/src/api/app.ts` (depende de T034)
-- [ ] T036 [P] [US4] Crear `frontend/src/components/DuplicateContactModal.tsx`: tras crear un
+- [X] T036 [P] [US4] Crear `frontend/src/components/DuplicateContactModal.tsx`: tras crear un
       contacto, si `posibles_duplicados` no está vacío, ofrece fusionar con uno de ellos o guardarlo
       como distinto (Principio IV: nunca fusiona sin confirmación explícita)
-- [ ] T037 [P] [US4] Crear `frontend/src/pages/People.tsx`: lista de contactos con nombre, nota y
+- [X] T037 [P] [US4] Crear `frontend/src/pages/People.tsx`: lista de contactos con nombre, nota y
       sesión/momento; formulario de registro rápido (solo nombre obligatorio); edición de nota;
       integra `DuplicateContactModal` (T036). Al registrar un contacto, resolver el `sesion_id`
       actual con `sesionActiva()` de `active-session.ts` (T002) sobre la agenda cacheada por
       `offline-store.ts` (T003) antes de llamar a la API (research.md R7) (depende de T002, T003).
       Usar `useAsync`/`Loading`/`ErrorState` de `frontend/src/components/States.tsx` para los
       estados de carga/error (Principio VIII)
-- [ ] T038 [US4] Integrar `offline-store.ts` (T003) en `People.tsx`: mismo patrón de cola offline
+- [X] T038 [US4] Integrar `offline-store.ts` (T003) en `People.tsx`: mismo patrón de cola offline
       que T026 pero para contactos (depende de T037, T003)
-- [ ] T039 [US4] Añadir la ruta `/eventos/:id/personas` en `frontend/src/App.tsx` y un enlace desde
+- [X] T039 [US4] Añadir la ruta `/eventos/:id/personas` en `frontend/src/App.tsx` y un enlace desde
       `EventReview.tsx` y `SimplifiedMode.tsx` (depende de T037)
-- [ ] T040 [P] [US4] Crear `e2e/tests/contactos.spec.ts` cubriendo el Escenario 4 de quickstart.md,
+- [X] T040 [P] [US4] Crear `e2e/tests/contactos.spec.ts` cubriendo el Escenario 4 de quickstart.md,
       incluido duplicado + fusión y contacto sin nota (depende de T035, T039)
 
 **Checkpoint**: Las 4 historias de usuario funcionan de forma independiente.
@@ -241,13 +241,13 @@ nota y su contexto, sin depender de notas de sesión ni de seguimiento (spec.md 
 
 **Purpose**: Mejoras que afectan a varias historias a la vez.
 
-- [ ] T041 [P] Actualizar `README.md`: mencionar la feature 002 junto a la 001 y las nuevas
+- [X] T041 [P] Actualizar `README.md`: mencionar la feature 002 junto a la 001 y las nuevas
       pantallas (Preguntas, Ahora, Notas, Personas)
-- [ ] T042 [P] Ejecutar `cd backend && npm run typecheck && npm run lint` y
+- [X] T042 [P] Ejecutar `cd backend && npm run typecheck && npm run lint` y
       `cd frontend && npm run typecheck && npm run lint` sobre todos los archivos nuevos/modificados
-- [ ] T043 Ejecutar manualmente los 4 escenarios de `quickstart.md` de punta a punta sobre el
+- [X] T043 Ejecutar manualmente los 4 escenarios de `quickstart.md` de punta a punta sobre el
       entorno local (backend + frontend), confirmando SC-001 a SC-006
-- [ ] T044 [P] Revisión visual de las 4 pantallas nuevas contra `frontend/src/styles/tokens.css`
+- [X] T044 [P] Revisión visual de las 4 pantallas nuevas contra `frontend/src/styles/tokens.css`
       (Principio III: sin cuarto color de acento, `.state-loading`/`.state-error`/`.state-empty`
       usados de forma consistente, Principio VIII)
 

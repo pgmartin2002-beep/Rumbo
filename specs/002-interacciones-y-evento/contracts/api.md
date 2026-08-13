@@ -56,12 +56,13 @@ backend no lo recalcula.
 - **Body** (voz): `{ "sesion_id": string | null, "origen": "voz", "audio": string }` — `audio` es el
   payload de audio (p. ej. base64); requiere conexión (FR-017), el cliente solo llama a esta ruta
   cuando está online.
-- **201**: `Nota` (para voz, con `contenido` ya transcrito y `estado_transcripcion: 'completada'`)
+- **201**: `Nota`. Para voz: si el adaptador transcribe con confianza, `contenido` ya transcrito y
+  `estado_transcripcion: 'completada'`; si no puede transcribir con fiabilidad, la nota se crea
+  igualmente con `contenido: ""` y `estado_transcripcion: 'pendiente'` (sin error) para que el
+  cliente muestre un aviso y el usuario la complete a mano (caso límite de spec.md, resuelto en la
+  aclaración de sesión 2026-08-12).
 - **400** `contenido_vacio`: nota de texto sin contenido.
 - **404** `sesion_no_encontrada`: `sesion_id` no nulo pero inexistente en el evento.
-- **422** `transcripcion_no_fiable`: el adaptador de voz no pudo transcribir con confianza; la nota
-  se guarda igualmente con `contenido: ""` y `estado_transcripcion: 'pendiente'` para que el usuario
-  la complete a mano (caso límite abierto en la spec).
 
 ### `PATCH /api/events/:id/notas/:notaId`
 

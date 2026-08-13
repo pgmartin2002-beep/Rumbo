@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { limpiarDatosE2E } from './reset-data.js';
 
 /**
  * Validación E2E de la Feature 001 (quickstart.md, escenarios 1–6).
@@ -7,8 +8,11 @@ import { test, expect } from '@playwright/test';
  *
  * Se ejecuta en serie porque los escenarios comparten el estado del backend
  * (importar → objetivos → agenda → logística) sobre un directorio de datos limpio.
+ * `beforeAll` deja el directorio vacío para este archivo en concreto, independientemente del
+ * orden en que Playwright ejecute el resto de `*.spec.ts` de la feature 002.
  */
 test.describe.configure({ mode: 'serial' });
+test.beforeAll(limpiarDatosE2E);
 
 function eventoPayload(): string {
   const ahora = Date.now();
