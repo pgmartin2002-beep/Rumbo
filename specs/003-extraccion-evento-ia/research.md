@@ -65,15 +65,17 @@ pasar de la spec al diseño (Fase 1), tomadas sobre el código ya existente de l
 - **Alternativas consideradas**: `cheerio` con selectores heurísticos ("agenda", "schedule") para
   aislar la sección relevante — mejora futura razonable, descartada ahora para no añadir una
   dependencia nueva solo para una heurística que tampoco sería fiable de forma genérica.
-- **Limitación conocida (validación manual T026)**: en apps que hidratan la página con
-  JavaScript (p. ej. Next.js), los datos de la agenda pueden viajar dentro de un `<script>` como
-  payload de hidratación (JSON), no como texto visible. `htmlATexto` descarta el contenido de
-  `<script>` por completo (asumiéndolo código, no datos), así que ese caso produce un texto muy
-  corto y sin sesiones aunque el HTML crudo sí contenga los datos — subir `RUMBO_AI_MAX_CHARS` no
-  lo soluciona, porque nunca se llega al límite. Se deja como el mismo edge case ya documentado en
-  `spec.md` ("contenido generado dinámicamente con JavaScript" → fuente ilegible/campos faltantes,
-  recuperación manual); extraer JSON embebido en `<script>` de forma genérica (sin acoplarse a un
-  framework concreto) queda fuera del alcance del MVP.
+- **Limitación conocida (validación manual T026, corregida tras investigar más — ver R11)**: en
+  `london.theaisummit.com` el texto visible es muy corto (~2 000 caracteres, solo menú y
+  boilerplate) y no contiene sesiones. La hipótesis inicial fue que los datos estaban en un
+  `<script>` de hidratación descartado por `htmlATexto`; investigando el HTML crudo completo se
+  confirmó que **no es así**: no hay ninguna sesión, hora ni ponente en ningún punto del HTML
+  (ni visible ni dentro de ningún `<script>`) — esta página en concreto pide el listado de
+  sesiones al navegador con una llamada de red posterior a la hidratación. Es exactamente el edge
+  case ya documentado en `spec.md` ("contenido generado dinámicamente con JavaScript" → fuente
+  ilegible, recuperación manual); ni R11 ni subir `RUMBO_AI_MAX_CHARS` lo resuelven, porque no hay
+  nada que extraer del HTML crudo para esta URL. R11 sigue siendo una mejora real para otras webs
+  que sí incrustan sus datos en el HTML (patrón común, ver R11).
 
 ## R5 — Presupuesto único de 30 s para fetch + IA (FR-008, SC-003)
 
@@ -150,3 +152,40 @@ pasar de la spec al diseño (Fase 1), tomadas sobre el código ya existente de l
 - **Rationale**: mismo principio que llevó a los adaptadores `Stub` del resto de features —
   mantener la suite E2E rápida y determinista — sin dejar de cubrir de forma automática el
   comportamiento crítico de seguridad (SSRF) y de degradación (FR-012).
+
+## R11 — Aprovechar datos embebidos en `<script>` sin ejecutar JavaScript (FR-014, aclaración de sesión 2026-08-13)
+
+- **Decisión**: `htmlATexto` (R4) pasa a construir el texto en dos partes, sobre el HTML **crudo**
+  (antes de descartar `<script>`):
+  1. **Candidatos de datos embebidos**: por cada `<script>` sin atributo `src`, se toma su
+     contenido y se prueba con `JSON.parse` (tras recortar espacios); si parsea como JSON válido
+     (objeto o array) y supera un tamaño mínimo (evita capturar scripts triviales tipo
+     `{}`/flags), se conserva como candidato. Se prioriza especialmente
+     `<script type="application/ld+json">` (dato estándar de schema.org que varias webs de
+     eventos ya usan para SEO — p. ej. `schema.org/Event` — y que, cuando existe, suele traer
+     nombre/fechas/ubicación/sesiones ya estructurados) delante del resto de candidatos.
+  2. **Texto visible**: igual que hasta ahora (quitar etiquetas, decodificar entidades, colapsar
+     espacios).
+  Los candidatos van primero, seguidos del texto visible, y el conjunto se recorta a
+  `RUMBO_AI_MAX_CHARS` como hasta ahora. La firma pública `htmlATexto(html, maxCaracteres)` no
+  cambia.
+- **Rationale**: es la interpretación "genérica" elegida en la aclaración de sesión 2026-08-13
+  (frente a reconocer patrones de frameworks concretos): no se acopla a ningún framework, se basa
+  en dos señales objetivas y baratas de comprobar (`JSON.parse` válido, y el estándar
+  `application/ld+json`) en vez de adivinar variables globales (`__NEXT_DATA__`, `__NUXT__`, etc.).
+- **Limitación conocida, verificada con la validación manual (ver nota corregida en R4)**: esta
+  heurística **no** cubre el formato de streaming de Next.js App Router
+  (`self.__next_f.push([...])`), que es una llamada de función con un string escapado, no JSON
+  válido de nivel superior — intentar parsear ese formato exigiría entender la serialización
+  interna de Next (frágil, específico de versión) o ejecutar JavaScript de verdad, que es
+  justamente lo que la aclaración de sesión 2026-08-12 descartó por coste/riesgo. Cubre en cambio:
+  páginas con `application/ld+json` (patrón estándar, común en webs de eventos para SEO) y
+  frameworks que hidratan con un único bloque JSON válido completo (p. ej. Next.js Pages Router
+  clásico con `__NEXT_DATA__`, detectado por validez de contenido, no por su `id`).
+- **Alternativas consideradas**:
+  - Reconocer patrones de frameworks conocidos (`__NEXT_DATA__`, `__NUXT__`, `window.__INITIAL_STATE__`)
+    — más preciso para esos casos concretos, pero acoplado y con mantenimiento continuo; descartado
+    en la aclaración de sesión 2026-08-13 a favor de la opción genérica.
+  - Aceptar cualquier `<script>` largo sin validar que sea JSON (heurística por tamaño) — descartada:
+    mete ruido de bundles de JS legítimos (analítica, polyfills) que no aportan nada y compiten por
+    presupuesto de caracteres con datos reales.

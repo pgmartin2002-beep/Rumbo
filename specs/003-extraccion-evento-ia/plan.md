@@ -17,6 +17,10 @@ la suite E2E de 001/002 (FR-007): el adaptador decide el camino a partir de la f
 no de un campo nuevo (research.md R8). Toda la obtención y la llamada a la IA ocurren en el backend,
 con un presupuesto único de 30 s (fetch + IA), bloqueo de SSRF con protección frente a DNS
 rebinding, y degradación controlada si falta la clave de IA — sin crear nunca eventos parciales.
+Además del texto visible, el texto enviado a la IA también aprovecha bloques de datos JSON válidos
+embebidos en `<script>` del HTML crudo (p. ej. `application/ld+json` o payloads de hidratación de
+frameworks SSR), sin ejecutar JavaScript en ningún momento (FR-014, aclaración de sesión
+2026-08-13, research.md R11).
 
 ## Technical Context
 
@@ -114,7 +118,8 @@ backend/
 │   │   ├── http-fetch.ts             # fetch con timeout/deadline + Agent SSRF-safe (R1, R2, R5)
 │   │   └── ssrf-guard.ts             # esIpPrivada / resolución + validación de destino (R2)
 │   ├── services/
-│   │   ├── html-to-text.ts           # htmlATexto (research.md R4)
+│   │   ├── html-to-text.ts           # htmlATexto: texto visible + JSON embebido en <script>
+│   │   │                             #   (research.md R4, R11 — FR-014)
 │   │   └── import-service.ts         # sin cambios de contrato; pasa fuente_valor al crear Evento
 │   ├── context.ts                    # + lectura de ANTHROPIC_API_KEY/RUMBO_AI_MODEL, wiring del
 │   │                                  #   adaptador real o degradado (research.md R7)
