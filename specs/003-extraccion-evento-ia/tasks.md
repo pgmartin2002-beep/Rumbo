@@ -192,8 +192,8 @@ crea sin pasar por la IA (spec.md, Historia 3).
       backend (`ANTHROPIC_API_KEY`, `RUMBO_AI_MODEL`, etc.) y el escenario E2E nuevo
 - [X] T025 [P] Ejecutar `cd backend && npm run typecheck && npm run lint` sobre todos los archivos
       nuevos/modificados
-- [ ] T026 Ejecutar manualmente el Escenario 1 de `quickstart.md` (URL pública real + IA) de punta a
-      punta, confirmando SC-001, SC-002, SC-003 y SC-005
+- [X] T026 Ejecutar manualmente el Escenario 1 de `quickstart.md` (URL pública real + IA) de punta a
+      punta, confirmando SC-001, SC-002, SC-003 y SC-005 — ver nota de resultado abajo
 - [X] T027 [P] Revisar los logs de una importación fallida y una exitosa para confirmar que ninguna
       credencial de la IA aparece en logs ni en la respuesta de la API (FR-009)
 
@@ -294,7 +294,26 @@ transparencia (no cambian el contrato de `spec.md` ni `contracts/api.md`):
 - **T020 / research.md R7**: el aviso de "IA sin configurar" usa `console.warn` en vez de
   `app.log.warn`, porque `createContext()` se construye antes de que exista la instancia de
   Fastify (no hay logger disponible en ese punto).
-- **T026**: no se ejecutó — requiere una `ANTHROPIC_API_KEY` real y una URL pública de un evento;
-  queda pendiente para quien configure una clave (ver `quickstart.md` Escenario 1).
 - **Modelo de IA por defecto**: se fijó `claude-haiku-4-5-20251001` en `RUMBO_AI_MODEL` (research.md
   U1 del informe de `/speckit-analyze`), en vez de dejarlo sin pinear.
+
+## T026 — Resultado de la validación manual (2026-08-13)
+
+Ejecutado contra `https://london.theaisummit.com/conference-agenda/full-agenda/` (la URL de
+ejemplo del `Input` de `spec.md`) con una `ANTHROPIC_API_KEY` real:
+
+- **201**, ~3s de respuesta (SC-003 ✓). `nombre: "The AI Summit London"`, fechas y `ubicacion`
+  extraídas correctamente; `fuente_valor` guardado con la URL (FR-010 ✓); ninguna credencial en la
+  respuesta ni en logs (FR-009/SC-005 ✓, T027).
+- `campos_faltantes: ["sesiones"]` — la IA no encontró sesiones dentro de los primeros
+  `RUMBO_AI_MAX_CHARS` (20 000) de texto limpiado de esta página en concreto (agenda muy larga);
+  comportamiento esperado del edge case ya documentado en `spec.md`/`research.md` R4 (heurística de
+  recorte por inicio de documento, no detección semántica de la sección de agenda), no un bug. Con
+  una sola URL de muestra no se puede confirmar el 80% de SC-001; sería necesario el corpus de
+  prueba sugerido en el hallazgo G1 del informe de `/speckit-analyze` para medirlo con confianza.
+- **Bug real encontrado y corregido durante esta validación** (no estaba cubierto por los tests
+  unitarios, que usaban una IP literal en vez de un hostname): el `lookup` fijado a la IP validada
+  por SSRF no soportaba la forma de Happy Eyeballs (`options.all`) que Node usa por defecto al
+  resolver hostnames reales, y la petición fallaba siempre con
+  `ERR_INVALID_IP_ADDRESS: Invalid IP address: undefined`. Corregido en `http-fetch.ts` y reforzado
+  el test correspondiente para que use un hostname (no una IP literal) y cubra ese camino.
