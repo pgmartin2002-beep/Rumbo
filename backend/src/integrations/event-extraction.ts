@@ -12,6 +12,8 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { FuenteImportacion } from '../models/index.js';
 import { obtenerHtml } from './http-fetch.js';
 import { htmlATexto } from '../services/html-to-text.js';
+import { PRESUPUESTO_TOTAL_MS, LIGERA_MS, RENDER_MS, IA_RENDER_MS } from './render-config.js';
+import type { RenderizadorNavegador, EstadoRender } from './browser-renderer.js';
 
 export interface DatosEventoExtraidos {
   nombre: string | null;
@@ -236,8 +238,8 @@ export class AnthropicEventExtractionAdapter implements MotorExtraccionIA {
 
 // --- Enrutado entre importación estructurada y URL real (FR-001, FR-007, research.md R8) ---
 
-/** Presupuesto total (fetch + IA) para una importación por URL (FR-008, SC-003, research.md R5). */
-export const PRESUPUESTO_TOTAL_MS = 30_000;
+/** Presupuesto total (fetch ligero + render + IA) por importación URL; se re-exporta (feature 004). */
+export { PRESUPUESTO_TOTAL_MS };
 
 /** ¿`payload` es una URL http/https candidata a extracción real? (research.md R8) */
 export function esUrlPublicaCandidata(payload: string): boolean {
@@ -261,17 +263,44 @@ export interface LimitesExtraccionUrl {
   maxChars: number;
 }
 
+/** Sesiones extraídas por una vía (0 si el resultado es nulo). */
+function contarSesiones(datos: DatosEventoExtraidos | null): number {
+  return datos?.sesiones.length ?? 0;
+}
+
+/** Telemetría segura de una importación por URL (FR-012): sin HTML, texto, cookies ni credenciales. */
+export interface TelemetriaExtraccion {
+  url: string;
+  ruta: 'ligera' | 'render';
+  render_usado: boolean;
+  estado_render?: EstadoRender;
+  solicitudes_bloqueadas?: number;
+  duracion_ms: number;
+  resultado: 'exito' | 'parcial' | 'ilegible';
+}
+
+export type RegistrarTelemetria = (t: TelemetriaExtraccion) => void;
+
+interface ResultadoRenderIA {
+  datos: DatosEventoExtraidos | null;
+  estado: EstadoRender;
+  bloqueadas: number;
+}
+
 /**
- * Único adaptador que consume `ImportService`. Decide el camino a partir de la forma del
- * `payload` (research.md R8): JSON estructurado → sin IA (FR-007); URL http/https → obtención +
- * IA (FR-001–FR-004); cualquier otro caso → ilegible. `motorIA: null` representa la IA sin
- * configurar (FR-012): el camino de URL degrada a ilegible sin intentar red.
+ * Único adaptador que consume `ImportService`. Decide el camino por la forma del `payload`: JSON
+ * estructurado → sin IA (FR-007); URL http/https → vía ligera (003) y, si no extrae ninguna sesión,
+ * escalado al render (feature 004). El render solo entra en juego si hay renderizador; su fallback
+ * conserva un resultado ligero útil o degrada a ilegible (FR-011). Nunca crea eventos parciales:
+ * devuelve datos completos o `null`, y `ImportService` persiste una sola vez con lo devuelto.
  */
 export class CompositeEventExtractionAdapter implements EventExtractionAdapter {
   constructor(
     private readonly estructurado: EventExtractionAdapter,
     private readonly motorIA: MotorExtraccionIA | null,
     private readonly limites: LimitesExtraccionUrl,
+    private readonly renderizador: RenderizadorNavegador | null = null,
+    private readonly registrar: RegistrarTelemetria = () => {},
   ) {}
 
   async extraer(fuente: FuenteImportacion, payload: string): Promise<DatosEventoExtraidos | null> {
@@ -288,14 +317,56 @@ export class CompositeEventExtractionAdapter implements EventExtractionAdapter {
   }
 
   private async extraerDeUrl(url: string, motor: MotorExtraccionIA): Promise<DatosEventoExtraidos | null> {
-    const deadline = Date.now() + PRESUPUESTO_TOTAL_MS;
+    const inicio = Date.now();
+    const deadline = inicio + PRESUPUESTO_TOTAL_MS;
+    // La ruta ligera usa todo el presupuesto salvo que el render pueda entrar en juego (plan.md, F1).
+    const topeLigero = this.renderizador ? Math.min(Date.now() + LIGERA_MS, deadline) : deadline;
 
+    const ligero = await this.extraerLigero(url, motor, topeLigero);
+    if (contarSesiones(ligero) >= 1) {
+      this.registrar({ url, ruta: 'ligera', render_usado: false, duracion_ms: Date.now() - inicio, resultado: 'exito' });
+      return ligero;
+    }
+
+    if (this.renderizador && deadline - Date.now() > 0) {
+      const r = await this.renderConIA(url, motor, deadline, this.renderizador);
+      if (contarSesiones(r.datos) >= 1) {
+        this.registrar({ url, ruta: 'render', render_usado: true, estado_render: r.estado, solicitudes_bloqueadas: r.bloqueadas, duracion_ms: Date.now() - inicio, resultado: 'exito' });
+        return r.datos;
+      }
+      // Fallback: conservar el resultado ligero útil o degradar a ilegible (FR-011, US2).
+      this.registrar({ url, ruta: 'render', render_usado: true, estado_render: r.estado, solicitudes_bloqueadas: r.bloqueadas, duracion_ms: Date.now() - inicio, resultado: ligero ? 'parcial' : 'ilegible' });
+      return ligero;
+    }
+
+    this.registrar({ url, ruta: 'ligera', render_usado: false, duracion_ms: Date.now() - inicio, resultado: ligero ? 'parcial' : 'ilegible' });
+    return ligero;
+  }
+
+  private async extraerLigero(
+    url: string,
+    motor: MotorExtraccionIA,
+    deadline: number,
+  ): Promise<DatosEventoExtraidos | null> {
     const contenido = await obtenerHtml(url, { deadline, maxBytes: this.limites.maxHtmlBytes });
     if (!contenido) return null;
-
     const texto = htmlATexto(contenido.html, this.limites.maxChars);
     if (!texto) return null;
-
     return motor.estructurar(texto, deadline);
+  }
+
+  private async renderConIA(
+    url: string,
+    motor: MotorExtraccionIA,
+    deadline: number,
+    renderizador: RenderizadorNavegador,
+  ): Promise<ResultadoRenderIA> {
+    const render = await renderizador.renderizar(url, Math.min(Date.now() + RENDER_MS, deadline));
+    if (!render.html) return { datos: null, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
+    const texto = htmlATexto(render.html, this.limites.maxChars);
+    if (!texto) return { datos: null, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
+    const iaDeadline = Math.min(Date.now() + IA_RENDER_MS, deadline);
+    const datos = await motor.estructurar(texto, iaDeadline);
+    return { datos, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
   }
 }

@@ -35,6 +35,10 @@ export default defineConfig({
         // degrade antes de llegar al bloqueo SSRF (research.md R10) — nunca llega a red real
         // porque el bloqueo corta la petición antes de invocar a Anthropic.
         ANTHROPIC_API_KEY: 'e2e-fake-key-do-not-use',
+        // Render (feature 004) deshabilitado en E2E: evita lanzar un navegador real por test y
+        // mantiene deterministas los casos SSRF/ilegible. El fallback de render se cubre en los
+        // tests de backend (event-extraction.test.ts).
+        RUMBO_RENDER_ENABLED: 'false',
       },
     },
     {

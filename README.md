@@ -64,9 +64,14 @@ Abre http://localhost:5173. Si no hay eventos verás el estado de bienvenida.
 | `RUMBO_AI_MODEL`          | `claude-haiku-4-5-20251001` | Modelo de Anthropic Claude usado para extraer eventos desde HTML.   |
 | `RUMBO_AI_MAX_HTML_BYTES` | `2097152` (2 MB)  | Tamaño máximo del HTML leído de la URL antes de cortar la lectura.   |
 | `RUMBO_AI_MAX_CHARS`      | `60000`          | Tamaño máximo del texto (tras limpiar el HTML) enviado a la IA.     |
+| `RUMBO_RENDER_ENABLED`    | `true`           | Render de agendas JavaScript (feature 004). Requiere `ANTHROPIC_API_KEY` y Chromium (`npx playwright install chromium`). Con `false`, importar por URL usa solo la vía ligera. |
+| `RUMBO_RENDER_TOTAL_MS`   | `45000`          | Presupuesto total (fetch ligero + render + IA) de una importación por URL. |
 
 Copia `backend/.env.example` a `backend/.env` para configurarlas en desarrollo local (se cargan
-automáticamente al arrancar el backend).
+automáticamente al arrancar el backend). Para el render (feature 004) instala Chromium una vez con
+`cd backend && npx playwright install chromium`; el navegador solo puede salir a Internet a través
+de un proxy local que bloquea destinos internos/privados (protección SSRF), por lo que en
+producción el proceso del navegador debe estar aislado para alcanzar únicamente ese proxy.
 
 ## Verificación
 

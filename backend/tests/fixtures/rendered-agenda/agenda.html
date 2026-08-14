@@ -1,0 +1,54 @@
+<!doctype html>
+<!--
+  Fixture de agenda generada con JavaScript (feature 004, T011). Sirve para las pruebas de
+  integración del navegador: el contenido de sesiones NO está en el HTML inicial; se inyecta por
+  JS tras la carga, hay un banner de consentimiento que tapa la agenda, pestañas por día y un
+  botón "Ver más" que revela una sesión adicional. Determinista, sin red externa.
+-->
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fixture Agenda Dinámica</title>
+  </head>
+  <body>
+    <div id="consent" style="position: fixed; inset: 0; background: #fff">
+      <p>Usamos cookies</p>
+      <button type="button" onclick="document.getElementById('consent').remove()">Aceptar</button>
+    </div>
+
+    <h1>Conferencia de Prueba 2026</h1>
+    <div role="tablist">
+      <button role="tab" onclick="mostrarDia(1)">Día 1</button>
+      <button role="tab" onclick="mostrarDia(2)">Día 2</button>
+    </div>
+    <div id="agenda"></div>
+    <button id="verMas" type="button" style="display: none" onclick="verMas()">Ver más</button>
+
+    <script>
+      // El agendaState simula datos que un SPA pediría por red tras hidratar.
+      var revelado = false;
+      function render(sesiones) {
+        var cont = document.getElementById('agenda');
+        cont.innerHTML = sesiones
+          .map(function (s) {
+            return '<article class="sesion"><h2>' + s.titulo + '</h2><time>' + s.hora + '</time></article>';
+          })
+          .join('');
+        document.getElementById('verMas').style.display = revelado ? 'none' : 'inline';
+      }
+      function mostrarDia(dia) {
+        render([{ titulo: 'Keynote Día ' + dia, hora: '09:00' }, { titulo: 'Panel Día ' + dia, hora: '11:00' }]);
+      }
+      function verMas() {
+        revelado = true;
+        var cont = document.getElementById('agenda');
+        cont.innerHTML += '<article class="sesion" id="revelada"><h2>SESION_REVELADA</h2><time>16:00</time></article>';
+        document.getElementById('verMas').style.display = 'none';
+      }
+      // Hidratación diferida: la agenda aparece un poco después de cargar (como un SPA real).
+      setTimeout(function () {
+        mostrarDia(1);
+      }, 50);
+    </script>
+  </body>
+</html>
