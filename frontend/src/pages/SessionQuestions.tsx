@@ -18,6 +18,7 @@ export default function SessionQuestions() {
 
   const [regenerando, setRegenerando] = useState(false);
   const [infoInsuficiente, setInfoInsuficiente] = useState(false);
+  const [servicioNoDisponible, setServicioNoDisponible] = useState(false);
   const [texto, setTexto] = useState('');
   const [guardando, setGuardando] = useState(false);
 
@@ -26,12 +27,15 @@ export default function SessionQuestions() {
   async function regenerar() {
     setRegenerando(true);
     setInfoInsuficiente(false);
+    setServicioNoDisponible(false);
     try {
       await api.post(`/events/${id}/sesiones/${sesionId}/preguntas/generar`);
       preguntas.reload();
     } catch (e) {
       if (e instanceof ApiClientError && e.codigo === 'informacion_insuficiente') {
         setInfoInsuficiente(true);
+      } else if (e instanceof ApiClientError && e.codigo === 'servicio_ia_no_disponible') {
+        setServicioNoDisponible(true);
       } else {
         throw e;
       }
@@ -54,9 +58,18 @@ export default function SessionQuestions() {
 
   if (agenda.loading || preguntas.loading) return <Loading label="Cargando preguntas…" />;
   if (agenda.error) return <ErrorState message={agenda.error} onRetry={agenda.reload} />;
-  if (preguntas.error && !infoInsuficiente) {
+  if (preguntas.error && !infoInsuficiente && !servicioNoDisponible) {
     return <ErrorState message={preguntas.error} onRetry={preguntas.reload} />;
   }
+
+  const haySugeridas = (preguntas.data ?? []).some((p) => p.origen === 'sugerida');
+  const textoBoton = regenerando
+    ? haySugeridas
+      ? 'Regenerando…'
+      : 'Generando…'
+    : haySugeridas
+      ? 'Regenerar preguntas'
+      : 'Generar preguntas';
 
   return (
     <section>
@@ -72,7 +85,7 @@ export default function SessionQuestions() {
       )}
 
       <button className="btn-secondary" onClick={regenerar} disabled={regenerando}>
-        {regenerando ? 'Regenerando…' : 'Regenerar preguntas'}
+        {textoBoton}
       </button>
 
       {infoInsuficiente && (
@@ -85,19 +98,33 @@ export default function SessionQuestions() {
         </div>
       )}
 
+      {servicioNoDisponible && (
+        <div className="illegible-card" style={{ marginTop: 14 }}>
+          <div className="il-ic">⚠</div>
+          <div className="il-title">Servicio de IA no disponible</div>
+          <div className="il-sub">
+            No se pudieron generar preguntas automáticamente en este momento. Puedes redactar las tuyas a continuación.
+          </div>
+        </div>
+      )}
+
       <div style={{ marginTop: 16 }}>
-        {(preguntas.data ?? []).length === 0 && !infoInsuficiente && (
+        {(preguntas.data ?? []).length === 0 && !infoInsuficiente && !servicioNoDisponible && (
           <p className="state-empty">Todavía no hay preguntas para esta sesión.</p>
         )}
         {(preguntas.data ?? []).map((p) => (
           <div key={p.id} className="pass" style={{ padding: '12px 14px' }}>
             <p style={{ margin: 0, fontSize: 13.5 }}>{p.texto}</p>
-            <span
-              className={`stamp ${p.origen === 'manual' ? 'teal' : 'amber'}`}
-              style={{ marginTop: 8, display: 'inline-block' }}
-            >
-              {p.origen === 'manual' ? 'Tuya' : 'Sugerida'}
-            </span>
+            <div style={{ display: 'flex', gap: 6, marginTop: 8, alignItems: 'center' }}>
+              <span className={`stamp ${p.origen === 'manual' ? 'teal' : 'amber'}`}>
+                {p.origen === 'manual' ? 'Tuya' : 'Sugerida'}
+              </span>
+              {p.tipo && (
+                <span className="stamp dim">
+                  {p.tipo === 'general' ? 'Estratégica' : 'Técnica'}
+                </span>
+              )}
+            </div>
           </div>
         ))}
       </div>

@@ -13,7 +13,11 @@ import {
 import { PlaywrightRenderizador } from './integrations/browser-renderer.js';
 import { renderHabilitado } from './integrations/render-config.js';
 import { StubMapsProviderAdapter } from './integrations/maps-provider.js';
-import { StubQuestionGenerationAdapter } from './integrations/question-generation.js';
+import {
+  AnthropicQuestionGenerationAdapter,
+  StubQuestionGenerationAdapter,
+  type QuestionGenerationAdapter,
+} from './integrations/question-generation.js';
 import { StubVoiceTranscriptionAdapter } from './integrations/voice-transcription.js';
 import { ImportService } from './services/import-service.js';
 import { GoalsService } from './services/goals-service.js';
@@ -55,6 +59,33 @@ function crearMotorIA(): MotorExtraccionIA | null {
   return new AnthropicEventExtractionAdapter(apiKey, process.env.RUMBO_AI_MODEL ?? MODELO_IA_POR_DEFECTO);
 }
 
+/**
+ * Construye el generador de preguntas con IA si hay clave configurada; en modo test o sin clave,
+ * degrada a Stub o fallback controlado (feature 005, FR-009, FR-012).
+ */
+function crearGeneradorPreguntas(): QuestionGenerationAdapter {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (
+    process.env.NODE_ENV === 'test' ||
+    process.env.RUMBO_QUESTIONS_STUB === 'true' ||
+    apiKey?.startsWith('e2e-fake')
+  ) {
+    return new StubQuestionGenerationAdapter();
+  }
+  if (!apiKey) {
+    console.warn(
+      '[rumbo] ANTHROPIC_API_KEY no está configurada: generar preguntas degradará a "servicio_ia_no_disponible" (feature 005, FR-009).',
+    );
+    return {
+      generar: async () => null,
+    };
+  }
+  return new AnthropicQuestionGenerationAdapter(
+    apiKey,
+    process.env.RUMBO_AI_MODEL ?? MODELO_IA_POR_DEFECTO,
+  );
+}
+
 export function createContext(dataDir?: string): AppContext {
   const repos = createRepositories(dataDir);
   const motorIA = crearMotorIA();
@@ -76,7 +107,7 @@ export function createContext(dataDir?: string): AppContext {
     registrarTelemetria,
   );
   const maps = new StubMapsProviderAdapter();
-  const generadorPreguntas = new StubQuestionGenerationAdapter();
+  const generadorPreguntas = crearGeneradorPreguntas();
   const transcriptor = new StubVoiceTranscriptionAdapter();
   return {
     repos,

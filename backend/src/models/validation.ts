@@ -112,3 +112,37 @@ export function validarNombreContacto(nombre: unknown): asserts nombre is string
     'El nombre del contacto es obligatorio',
   );
 }
+
+// --- Validación de preguntas generadas por IA (FR-004, FR-008) ---
+
+export interface PreguntaGeneradaValidacion {
+  texto: string;
+  tipo: TipoPregunta;
+}
+
+export interface RespuestaGeneracionToolValidacion {
+  preguntas: PreguntaGeneradaValidacion[];
+}
+
+function esPreguntaGeneradaValida(p: unknown): p is PreguntaGeneradaValidacion {
+  if (!p || typeof p !== 'object') return false;
+  const obj = p as Record<string, unknown>;
+  if (typeof obj.texto !== 'string' || obj.texto.trim().length === 0) return false;
+  if (obj.tipo !== 'general' && obj.tipo !== 'tecnica') return false;
+  return true;
+}
+
+/**
+ * Valida la estructura devuelta por el motor de IA para preguntas (FR-004, FR-008):
+ * exactamente 4 preguntas, textos no vacíos, tipos válidos ('general' o 'tecnica') y
+ * al menos una pregunta de cada categoría.
+ */
+export function esPreguntasGeneradasValidas(datos: unknown): datos is RespuestaGeneracionToolValidacion {
+  if (!datos || typeof datos !== 'object') return false;
+  const obj = datos as Record<string, unknown>;
+  if (!Array.isArray(obj.preguntas) || obj.preguntas.length !== 4) return false;
+  if (!obj.preguntas.every(esPreguntaGeneradaValida)) return false;
+  const tieneGeneral = obj.preguntas.some((p) => p.tipo === 'general');
+  const tieneTecnica = obj.preguntas.some((p) => p.tipo === 'tecnica');
+  return tieneGeneral && tieneTecnica;
+}

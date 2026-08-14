@@ -21,11 +21,15 @@ test('Historia 1: preguntas sugeridas, regenerar, manual e información insufici
     { titulo: 'Sesión sin tema', inicioH: 3, finH: 4, sala: 'B', tema: null },
   ]);
 
-  // AC1/AC2: con tema, se generan y se pueden regenerar preguntas sugeridas.
+  // AC1/AC2: con tema, se generan preguntas estructuradas (4 sugeridas: estratégicas y técnicas).
   await page.getByRole('link', { name: /Taller de IA/i }).click();
   await expect(page.getByRole('heading', { name: 'Taller de IA' })).toBeVisible();
-  await page.getByRole('button', { name: /Regenerar preguntas/i }).click();
+  
+  // Botón inicial "Generar preguntas"
+  await page.getByRole('button', { name: /Generar preguntas/i }).click();
   await expect(page.getByText('Sugerida').first()).toBeVisible();
+  await expect(page.getByText('Estratégica').first()).toBeVisible();
+  await expect(page.getByText('Técnica').first()).toBeVisible();
 
   // AC1: preguntas relacionadas con el tema declarado.
   await expect(page.getByText(/inteligencia artificial|machine learning/i).first()).toBeVisible();
@@ -39,10 +43,15 @@ test('Historia 1: preguntas sugeridas, regenerar, manual e información insufici
   await expect(page.getByText('¿Cuál es tu framework favorito?')).toBeVisible();
   await expect(page.getByText('Sugerida').first()).toBeVisible();
 
+  // US2: regenerar preguntas mantiene la manual y sustituye las sugeridas.
+  await page.getByRole('button', { name: /Regenerar preguntas/i }).click();
+  await expect(page.getByText('¿Cuál es tu framework favorito?')).toBeVisible();
+  await expect(page.getByText('Tuya').first()).toBeVisible();
+
   // AC3: sin tema suficiente, la app informa y permite seguir creando preguntas a mano.
   await page.getByRole('link', { name: /^Agenda$/i }).click();
   await page.getByRole('link', { name: /Sesión sin tema/i }).click();
-  await page.getByRole('button', { name: /Regenerar preguntas/i }).click();
+  await page.getByRole('button', { name: /Generar preguntas/i }).click();
   await expect(page.getByText(/no hay información suficiente/i)).toBeVisible();
   await page.getByPlaceholder(/Escribe una pregunta/i).fill('¿De qué va esta sesión?');
   await page.getByRole('button', { name: /Añadir pregunta/i }).click();

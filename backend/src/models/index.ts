@@ -131,12 +131,14 @@ export interface AlertaLogistica {
 
 // --- Entidades de la feature 002 (preparar interacciones y vivir el evento) ---
 
+export type TipoPregunta = 'general' | 'tecnica';
 export type OrigenPregunta = 'sugerida' | 'manual';
 
 export interface PreguntaPreparada {
   id: UUID;
   sesion_id: UUID;
   texto: string;
+  tipo?: TipoPregunta;
   origen: OrigenPregunta;
   creado_en: ISODateTime;
 }

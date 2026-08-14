@@ -99,12 +99,14 @@ export interface Alert {
   propuesta_hora_salida: string | null;
 }
 
+export type TipoPregunta = 'general' | 'tecnica';
 export type OrigenPregunta = 'sugerida' | 'manual';
 
 export interface Pregunta {
   id: string;
   sesion_id: string;
   texto: string;
+  tipo?: TipoPregunta;
   origen: OrigenPregunta;
   creado_en: string;
 }
