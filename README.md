@@ -62,11 +62,22 @@ Abre http://localhost:5173. Si no hay eventos verás el estado de bienvenida.
 | `RUMBO_DATA_DIR`          | `backend/data`   | Directorio del almacén de ficheros JSON.                            |
 | `ANTHROPIC_API_KEY`       | _(ninguna)_      | Clave del motor de IA (feature 003). Sin ella, importar por URL degrada a "fuente ilegible" (ver `specs/003-extraccion-evento-ia/`). |
 | `RUMBO_AI_MODEL`          | `claude-haiku-4-5-20251001` | Modelo de Anthropic Claude usado para extraer eventos desde HTML.   |
+| `RUMBO_AI_MAX_TOKENS`     | `16384`          | Tokens máximos de salida de la IA (agendas grandes necesitan margen para no truncar). |
 | `RUMBO_AI_MAX_HTML_BYTES` | `2097152` (2 MB)  | Tamaño máximo del HTML leído de la URL antes de cortar la lectura.   |
 | `RUMBO_AI_MAX_CHARS`      | `60000`          | Tamaño máximo del texto (tras limpiar el HTML) enviado a la IA.     |
+| `RUMBO_RENDER_ENABLED`    | `true`           | Render de agendas JavaScript (feature 004). Requiere `ANTHROPIC_API_KEY` y Chromium (`npx playwright install chromium`). Con `false`, importar por URL usa solo la vía ligera. |
+| `RUMBO_RENDER_TOTAL_MS`   | `120000`         | Presupuesto total (fetch ligero + render + IA) de una importación por URL (hasta ~2 min para agendas grandes). |
 
 Copia `backend/.env.example` a `backend/.env` para configurarlas en desarrollo local (se cargan
-automáticamente al arrancar el backend).
+automáticamente al arrancar el backend). Para el render (feature 004) instala Chromium una vez con
+`cd backend && npx playwright install chromium`; el navegador solo puede salir a Internet a través
+de un proxy local que bloquea destinos internos/privados (protección SSRF), por lo que en
+producción el proceso del navegador debe estar aislado para alcanzar únicamente ese proxy.
+
+> **Redes corporativas con inspección SSL:** si tu red hace MITM de HTTPS con una CA propia, Node
+> la rechazaría (`SELF_SIGNED_CERT_IN_CHAIN`) y la IA/obtención de páginas fallarían. El backend
+> inyecta automáticamente las CA del almacén de Windows (`win-ca`) al arrancar, así que en Windows
+> funciona sin configuración. En Linux/CI usa `NODE_EXTRA_CA_CERTS` apuntando a la CA corporativa.
 
 ## Verificación
 

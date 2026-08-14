@@ -42,9 +42,13 @@ export function esIpPrivada(ip: string): boolean {
       const v4 = normalizada.slice('::ffff:'.length);
       return isIP(v4) === 4 ? esIpPrivada(v4) : true;
     }
-    const primerGrupo = parseInt(normalizada.split(':')[0] || '0', 16);
+    const grupos = normalizada.split(':');
+    const primerGrupo = parseInt(grupos[0] || '0', 16);
     if (primerGrupo >= 0xfe80 && primerGrupo <= 0xfebf) return true; // fe80::/10 link-local
     if (primerGrupo >= 0xfc00 && primerGrupo <= 0xfdff) return true; // fc00::/7 unique local
+    if (primerGrupo >= 0xff00) return true; // ff00::/8 multicast
+    if (primerGrupo === 0x2001 && (parseInt(grupos[1] || '0', 16) & 0xfff0) === 0x0db0) return true; // 2001:db8::/32 doc
+    if (primerGrupo === 0x0064 && parseInt(grupos[1] || '0', 16) === 0xff9b) return true; // 64:ff9b::/96 NAT64
     return false;
   }
   return true; // no es una IP reconocible → no se puede dar por segura

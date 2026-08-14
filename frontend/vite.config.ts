@@ -21,7 +21,8 @@ export default defineConfig({
   ],
   server: {
     proxy: {
-      '/api': 'http://localhost:3001',
+      // Sin timeout: la importación por URL con render + IA puede tardar hasta ~2 min (feature 004).
+      '/api': { target: 'http://localhost:3001', changeOrigin: true, timeout: 0, proxyTimeout: 0 },
     },
   },
   test: {

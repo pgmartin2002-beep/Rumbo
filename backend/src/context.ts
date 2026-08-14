@@ -8,7 +8,10 @@ import {
   CompositeEventExtractionAdapter,
   StubEventExtractionAdapter,
   type MotorExtraccionIA,
+  type RegistrarTelemetria,
 } from './integrations/event-extraction.js';
+import { PlaywrightRenderizador } from './integrations/browser-renderer.js';
+import { renderHabilitado } from './integrations/render-config.js';
 import { StubMapsProviderAdapter } from './integrations/maps-provider.js';
 import { StubQuestionGenerationAdapter } from './integrations/question-generation.js';
 import { StubVoiceTranscriptionAdapter } from './integrations/voice-transcription.js';
@@ -54,10 +57,24 @@ function crearMotorIA(): MotorExtraccionIA | null {
 
 export function createContext(dataDir?: string): AppContext {
   const repos = createRepositories(dataDir);
-  const extractor = new CompositeEventExtractionAdapter(new StubEventExtractionAdapter(), crearMotorIA(), {
-    maxHtmlBytes: Number(process.env.RUMBO_AI_MAX_HTML_BYTES) || MAX_HTML_BYTES_POR_DEFECTO,
-    maxChars: Number(process.env.RUMBO_AI_MAX_CHARS) || MAX_CHARS_POR_DEFECTO,
-  });
+  const motorIA = crearMotorIA();
+  // El render solo tiene sentido con IA configurada; sin ella la vía de URL ya degrada antes (FR-012).
+  const renderizador = motorIA && renderHabilitado() ? new PlaywrightRenderizador() : null;
+  if (motorIA && !renderHabilitado()) {
+    console.warn('[rumbo] RUMBO_RENDER_ENABLED=false: importar por URL usará solo la vía ligera (feature 004, FR-011).');
+  }
+  // Telemetría segura: solo campos no sensibles (FR-012); nunca HTML, texto, cookies ni credenciales.
+  const registrarTelemetria: RegistrarTelemetria = (t) => console.info('[rumbo][import]', JSON.stringify(t));
+  const extractor = new CompositeEventExtractionAdapter(
+    new StubEventExtractionAdapter(),
+    motorIA,
+    {
+      maxHtmlBytes: Number(process.env.RUMBO_AI_MAX_HTML_BYTES) || MAX_HTML_BYTES_POR_DEFECTO,
+      maxChars: Number(process.env.RUMBO_AI_MAX_CHARS) || MAX_CHARS_POR_DEFECTO,
+    },
+    renderizador,
+    registrarTelemetria,
+  );
   const maps = new StubMapsProviderAdapter();
   const generadorPreguntas = new StubQuestionGenerationAdapter();
   const transcriptor = new StubVoiceTranscriptionAdapter();

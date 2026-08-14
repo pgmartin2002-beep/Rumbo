@@ -26,6 +26,28 @@ export interface Repository<T extends Entity> {
 
 const DEFAULT_DATA_DIR = process.env.RUMBO_DATA_DIR ?? path.resolve(process.cwd(), 'data');
 
+/**
+ * Renombra reintentando ante bloqueos transitorios del sistema de ficheros. En Windows, el
+ * antivirus/indexador puede retener brevemente el destino tras una escritura y hacer fallar el
+ * `rename` con EPERM/EBUSY/EACCES; se reintenta con backoff antes de rendirse.
+ */
+async function renombrarConReintentos(origen: string, destino: string, intentos = 6): Promise<void> {
+  for (let i = 0; ; i++) {
+    try {
+      await fs.rename(origen, destino);
+      return;
+    } catch (err) {
+      const code = (err as NodeJS.ErrnoException).code;
+      if (i < intentos && (code === 'EPERM' || code === 'EBUSY' || code === 'EACCES')) {
+        await new Promise((r) => setTimeout(r, 25 * (i + 1)));
+        continue;
+      }
+      await fs.rm(origen, { force: true }).catch(() => {});
+      throw err;
+    }
+  }
+}
+
 export class JsonRepository<T extends Entity> implements Repository<T> {
   private readonly filePath: string;
   private writeChain: Promise<unknown> = Promise.resolve();
@@ -53,7 +75,7 @@ export class JsonRepository<T extends Entity> implements Repository<T> {
       await fs.mkdir(path.dirname(this.filePath), { recursive: true });
       const tmp = `${this.filePath}.${randomUUID()}.tmp`;
       await fs.writeFile(tmp, JSON.stringify(items, null, 2), 'utf-8');
-      await fs.rename(tmp, this.filePath);
+      await renombrarConReintentos(tmp, this.filePath);
     };
     this.writeChain = this.writeChain.then(task, task);
     await this.writeChain;

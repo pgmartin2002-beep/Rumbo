@@ -35,6 +35,8 @@ coverage/
 
 # PWA / Vite
 frontend/dev-dist/
+.vite/
+
 
 # Playwright
 test-results/

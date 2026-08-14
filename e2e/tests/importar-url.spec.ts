@@ -8,6 +8,10 @@ import { limpiarDatosE2E } from './reset-data.js';
  * para que el pipeline llegue al bloqueo SSRF en vez de degradar antes por falta de clave — esa
  * degradación (FR-012) ya está cubierta de forma determinista en `backend/tests/event-extraction.test.ts`.
  * Ningún caso de este archivo llega a hacer una petición de red real (research.md R10).
+ *
+ * Feature 004: el render se arranca deshabilitado en E2E (RUMBO_RENDER_ENABLED=false,
+ * playwright.config.ts) para no lanzar un navegador real por test; el estado `fuente_ilegible`
+ * que valida este archivo cubre también la ruta ligera cuando el render no interviene.
  */
 test.describe.configure({ mode: 'serial' });
 test.beforeAll(limpiarDatosE2E);
