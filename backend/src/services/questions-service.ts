@@ -1,11 +1,14 @@
 /**
- * Servicio de preguntas preparadas por sesión (Historia 1, FR-001–FR-004).
+ * Servicio de preguntas preparadas por sesión (Historia 1, FR-001–FR-004, FR-005, FR-006).
  */
 import type { Repositories } from '../repositories/index.js';
-import type { PreguntaPreparada, Sesion } from '../models/index.js';
+import type { PreguntaPreparada, Sesion, Ponente } from '../models/index.js';
 import { ApiError } from '../api/error-handler.js';
 import { validarTextoPregunta } from '../models/validation.js';
-import type { QuestionGenerationAdapter } from '../integrations/question-generation.js';
+import type {
+  QuestionGenerationAdapter,
+  ContextoGeneracionPreguntas,
+} from '../integrations/question-generation.js';
 
 export class QuestionsService {
   constructor(
@@ -21,11 +24,16 @@ export class QuestionsService {
     return sesion;
   }
 
-  private async nombresPonentes(ponenteIds: string[]): Promise<string[]> {
+  private async obtenerPonentes(
+    ponenteIds: string[],
+  ): Promise<{ nombre: string; empresa: string | null }[]> {
     if (ponenteIds.length === 0) return [];
     const ponentes = await this.repos.ponentes.list();
     const porId = new Map(ponentes.map((p) => [p.id, p] as const));
-    return ponenteIds.map((id) => porId.get(id)?.nombre).filter((n): n is string => Boolean(n));
+    return ponenteIds
+      .map((id) => porId.get(id))
+      .filter((p): p is Ponente => Boolean(p))
+      .map((p) => ({ nombre: p.nombre, empresa: p.empresa }));
   }
 
   async listar(eventoId: string, sesionId: string): Promise<PreguntaPreparada[]> {
@@ -33,12 +41,14 @@ export class QuestionsService {
     return this.repos.preguntas.findBy((p) => p.sesion_id === sesionId);
   }
 
-  /** Borra las anteriores `origen: 'sugerida'` y genera un conjunto nuevo (FR-001, FR-002). */
+  /**
+   * Borra las anteriores `origen: 'sugerida'` (preservando intactas las `origen: 'manual'`)
+   * y genera exactamente 4 preguntas estructuradas con el LLM (FR-001–FR-006).
+   */
   async generar(eventoId: string, sesionId: string): Promise<PreguntaPreparada[]> {
     const sesion = await this.obtenerSesion(eventoId, sesionId);
-    const ponentes = await this.nombresPonentes(sesion.ponente_ids);
-    const textos = await this.generador.generar(sesion.tema, ponentes);
-    if (!textos) {
+
+    if (!sesion.tema || !sesion.tema.trim()) {
       throw new ApiError(
         422,
         'informacion_insuficiente',
@@ -46,6 +56,29 @@ export class QuestionsService {
       );
     }
 
+    const evento = await this.repos.eventos.findById(eventoId);
+    const ponentes = await this.obtenerPonentes(sesion.ponente_ids);
+    const perfiles = await this.repos.perfilesObjetivos.findBy((po) => po.evento_id === eventoId);
+    const objetivosUsuario = perfiles.length > 0 ? perfiles[0].objetivos : [];
+
+    const contexto: ContextoGeneracionPreguntas = {
+      eventoNombre: evento?.nombre ?? null,
+      sesionTitulo: sesion.titulo,
+      sesionTema: sesion.tema,
+      ponentes,
+      objetivosUsuario,
+    };
+
+    const preguntasGeneradas = await this.generador.generar(contexto);
+    if (!preguntasGeneradas || preguntasGeneradas.length === 0) {
+      throw new ApiError(
+        503,
+        'servicio_ia_no_disponible',
+        'No se pudieron generar preguntas en este momento',
+      );
+    }
+
+    // Borrado selectivo: solo preguntas sugeridas de esta sesión (FR-006, SC-003)
     const anteriores = await this.repos.preguntas.findBy(
       (p) => p.sesion_id === sesionId && p.origen === 'sugerida',
     );
@@ -54,13 +87,23 @@ export class QuestionsService {
     }
 
     const ahora = new Date().toISOString();
-    for (const texto of textos) {
-      await this.repos.preguntas.create({ sesion_id: sesionId, texto, origen: 'sugerida', creado_en: ahora });
+    for (const p of preguntasGeneradas) {
+      await this.repos.preguntas.create({
+        sesion_id: sesionId,
+        texto: p.texto,
+        tipo: p.tipo,
+        origen: 'sugerida',
+        creado_en: ahora,
+      });
     }
     return this.repos.preguntas.findBy((p) => p.sesion_id === sesionId);
   }
 
-  async agregarManual(eventoId: string, sesionId: string, texto: unknown): Promise<PreguntaPreparada> {
+  async agregarManual(
+    eventoId: string,
+    sesionId: string,
+    texto: unknown,
+  ): Promise<PreguntaPreparada> {
     await this.obtenerSesion(eventoId, sesionId);
     validarTextoPregunta(texto);
     return this.repos.preguntas.create({
