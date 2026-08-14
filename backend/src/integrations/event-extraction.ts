@@ -214,7 +214,7 @@ export class AnthropicEventExtractionAdapter implements MotorExtraccionIA {
       respuesta = await this.client.messages.create(
         {
           model: this.modelo,
-          max_tokens: 4096,
+          max_tokens: Number(process.env.RUMBO_AI_MAX_TOKENS) || 16_384,
           temperature: 0,
           system: SYSTEM_PROMPT,
           tools: [REGISTRAR_EVENTO_TOOL],
@@ -361,12 +361,14 @@ export class CompositeEventExtractionAdapter implements EventExtractionAdapter {
     deadline: number,
     renderizador: RenderizadorNavegador,
   ): Promise<ResultadoRenderIA> {
-    const render = await renderizador.renderizar(url, Math.min(Date.now() + RENDER_MS, deadline));
+    // Se reserva un suelo (IA_RENDER_MS) para la IA capando antes el render; aun así la IA final
+    // usa todo el presupuesto restante, para no abortar agendas grandes con budget disponible.
+    const topeRender = Math.min(Date.now() + RENDER_MS, deadline - IA_RENDER_MS);
+    const render = await renderizador.renderizar(url, topeRender);
     if (!render.html) return { datos: null, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
     const texto = htmlATexto(render.html, this.limites.maxChars);
     if (!texto) return { datos: null, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
-    const iaDeadline = Math.min(Date.now() + IA_RENDER_MS, deadline);
-    const datos = await motor.estructurar(texto, iaDeadline);
+    const datos = await motor.estructurar(texto, deadline);
     return { datos, estado: render.estado, bloqueadas: render.solicitudes_bloqueadas };
   }
 }

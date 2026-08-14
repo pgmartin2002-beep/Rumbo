@@ -14,6 +14,7 @@ import {
   LIMITES_INTERACCION,
   MAX_RENDER_CONCURRENTE,
   RENDER_MS,
+  SETTLE_MS,
 } from './render-config.js';
 
 export type EstadoRender =
@@ -83,8 +84,9 @@ export class PlaywrightRenderizador implements RenderizadorNavegador {
       await pagina.goto(url, { waitUntil: 'domcontentloaded', timeout: margenNav });
 
       await this.interactuar(pagina, deadline);
+      await this.esperarContenidoEstable(pagina, deadline);
 
-      const html = await pagina.content();
+      const html = await this.capturarFrames(pagina);
       return this.resultado('completado', html, bloqueadas, inicio);
     } catch (error) {
       const esTimeout = error instanceof Error && /timeout/i.test(error.message);
@@ -173,5 +175,54 @@ export class PlaywrightRenderizador implements RenderizadorNavegador {
 
   private resultado(estado: EstadoRender, html: string | null, bloqueadas: number, inicio: number): ResultadoRender {
     return { estado, html, solicitudes_bloqueadas: bloqueadas, duracion_ms: Date.now() - inicio };
+  }
+
+  /**
+   * Espera a que el contenido diferido (p. ej. sesiones que un widget en iframe carga tras la
+   * hidratación) termine de aparecer: muestrea el texto total de los frames hasta que deja de
+   * crecer o se agota un margen acotado. No usa `networkidle` (analítica/polling nunca cesan).
+   */
+  private async esperarContenidoEstable(pagina: Page, deadline: number): Promise<void> {
+    const fin = Math.min(Date.now() + SETTLE_MS, deadline - 1_000);
+    let previo = -1;
+    while (Date.now() < fin) {
+      const largo = await this.longitudTexto(pagina);
+      if (largo > 0 && largo === previo) return;
+      previo = largo;
+      await pagina.waitForTimeout(ESPERA_ACCION_MS);
+    }
+  }
+
+  private async longitudTexto(pagina: Page): Promise<number> {
+    let total = 0;
+    for (const frame of pagina.frames()) {
+      try {
+        total += (await frame.evaluate('document.body ? document.body.innerText.length : 0')) as number;
+      } catch {
+        /* frame no accesible: se ignora */
+      }
+    }
+    return total;
+  }
+
+  /**
+   * Combina el texto visible de todos los frames (muchas agendas se cargan en un iframe de una
+   * plataforma externa; `page.content()` solo cubre el frame superior). Se usa `innerText` en vez
+   * del HTML para no arrastrar los enormes bloques `<script>` (p. ej. i18n del widget) que taparían
+   * la agenda al recortar por el límite de caracteres. Los iframes van primero.
+   */
+  private async capturarFrames(pagina: Page): Promise<string> {
+    const principal = pagina.mainFrame();
+    const ordenados = [...pagina.frames().filter((f) => f !== principal), principal];
+    const partes: string[] = [];
+    for (const frame of ordenados) {
+      try {
+        const texto = (await frame.evaluate('document.body ? document.body.innerText : ""')) as string;
+        if (texto && texto.trim()) partes.push(texto);
+      } catch {
+        /* frame no accesible o que navegó: se ignora */
+      }
+    }
+    return partes.join('\n\n');
   }
 }

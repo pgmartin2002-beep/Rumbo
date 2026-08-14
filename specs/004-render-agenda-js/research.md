@@ -20,15 +20,15 @@
 
 ## R4 — Interacciones y finalización del DOM
 
-- **Decisión**: capturar `page.content()` tras navegación y acciones acotadas: un consentimiento, hasta siete tabs, cinco "ver más", cinco scrolls y dieciséis acciones. Cada acción espera un crecimiento breve del DOM/texto; no se usa `networkidle` y no se siguen enlaces.
-- **Rationale**: cubre patrones habituales de agenda sin convertir el navegador en un crawler ni quedar bloqueado por analítica/polling.
-- **Alternativas consideradas**: solo esperar carga — descartado por banners y tabs; esperar `networkidle` — descartado por tráfico de fondo permanente; seguir enlaces — fuera de alcance y expande SSRF/superficie de coste.
+- **Decisión**: capturar el texto visible (`innerText`) de **todos los frames** (iframes primero) tras navegación y acciones acotadas: un consentimiento, hasta siete tabs, cinco "ver más", cinco scrolls y dieciséis acciones. Muchas agendas se cargan en un iframe de una plataforma externa (p. ej. Informa/`attend.*`), por lo que `page.content()` del frame superior no basta; se usa `innerText` para no arrastrar bloques `<script>` gigantes (i18n del widget) que taparían la agenda al recortar por el límite de caracteres. Tras interactuar se espera a que el texto total de los frames deje de crecer (contenido diferido), sin usar `networkidle`.
+- **Rationale**: cubre patrones habituales de agenda (SPA principal e iframes de plataforma) sin convertir el navegador en un crawler ni quedar bloqueado por analítica/polling.
+- **Alternativas consideradas**: `page.content()` del frame superior — descartado, pierde agendas embebidas en iframe; HTML completo de los frames — descartado, el `<script>` i18n del widget desplaza la agenda; esperar `networkidle` — descartado por tráfico de fondo permanente; seguir enlaces — fuera de alcance y expande SSRF/superficie de coste.
 
 ## R5 — Recursos, tiempos y observabilidad
 
-- **Decisión**: deadline absoluto de 45 s con topes de fase 12/22/10/1 s. Un navegador por proceso y un contexto/página efímeros por importación; un render concurrente con espera máxima de 2 s. Registrar URL, ruta usada, duración por fase, clase de fallo, número de solicitudes bloqueadas y rechazo por capacidad, sin contenido sensible.
+- **Decisión**: deadline absoluto de 120 s (2 min) con topes de fase orientativos (ligera ~20 s, render ~60 s) y un suelo reservado para la IA final, que usa el presupuesto restante. Un navegador por proceso y un contexto/página efímeros por importación; un render concurrente con espera máxima de 2 s. Registrar URL, ruta usada, duración por fase, clase de fallo, número de solicitudes bloqueadas y rechazo por capacidad, sin contenido sensible.
 - **Rationale**: evita que una etapa consuma el presupuesto de otra, limita memoria/CPU y permite diagnosticar el resultado genérico `fuente_ilegible` sin exponer detalles al cliente.
-- **Alternativas consideradas**: timeout por fase independiente — descartado porque podría superar 45 s; render paralelo ilimitado — descartado por el coste de Chromium; logs de HTML/DOM — descartados por privacidad y volumen.
+- **Alternativas consideradas**: timeout por fase independiente — descartado porque podría superar el total; render paralelo ilimitado — descartado por el coste de Chromium; logs de HTML/DOM — descartados por privacidad y volumen.
 
 ## R6 — Estrategia de pruebas
 

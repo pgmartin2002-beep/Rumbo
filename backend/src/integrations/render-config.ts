@@ -12,13 +12,16 @@ function entero(nombre: string, porDefecto: number): number {
 }
 
 /** Presupuesto total (fetch ligero + render + IA) de una importación por URL (FR-008, SC-003). */
-export const PRESUPUESTO_TOTAL_MS = entero('RUMBO_RENDER_TOTAL_MS', 45_000);
+export const PRESUPUESTO_TOTAL_MS = entero('RUMBO_RENDER_TOTAL_MS', 120_000);
 
 /** Topes de fase (plan.md). Cada fase usa además el mínimo con el tiempo global restante. */
-export const LIGERA_MS = entero('RUMBO_RENDER_LIGERA_MS', 12_000);
-export const RENDER_MS = entero('RUMBO_RENDER_RENDER_MS', 22_000);
-export const IA_RENDER_MS = entero('RUMBO_RENDER_IA_MS', 10_000);
+export const LIGERA_MS = entero('RUMBO_RENDER_LIGERA_MS', 20_000);
+export const RENDER_MS = entero('RUMBO_RENDER_RENDER_MS', 60_000);
+export const IA_RENDER_MS = entero('RUMBO_RENDER_IA_MS', 60_000);
 export const MARGEN_MS = entero('RUMBO_RENDER_MARGEN_MS', 1_000);
+
+/** Margen para que el contenido diferido (p. ej. sesiones en un iframe) termine de aparecer. */
+export const SETTLE_MS = entero('RUMBO_RENDER_SETTLE_MS', 20_000);
 
 /** Capacidad de render concurrente y espera máxima para adquirirla (research.md R5). */
 export const MAX_RENDER_CONCURRENTE = entero('RUMBO_RENDER_MAX_CONCURRENTE', 1);

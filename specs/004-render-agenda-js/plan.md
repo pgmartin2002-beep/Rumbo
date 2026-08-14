@@ -6,7 +6,7 @@
 
 ## Summary
 
-La importación conservará HTML crudo → texto → IA como primer intento. Cuando esa ruta no extraiga ninguna sesión, un navegador controlado en backend capturará el DOM tras ejecutar JavaScript, realizará interacciones de agenda acotadas y reutilizará la conversión a texto, IA y validación existentes. El render usa un presupuesto total de 45 s, una sola capacidad concurrente, fallback al resultado ligero útil y una salida de red SSRF-safe para toda petición iniciada por el navegador.
+La importación conservará HTML crudo → texto → IA como primer intento. Cuando esa ruta no extraiga ninguna sesión, un navegador controlado en backend capturará el DOM tras ejecutar JavaScript, realizará interacciones de agenda acotadas y reutilizará la conversión a texto, IA y validación existentes. El render usa un presupuesto total de 120 s (2 min; prioriza completar la extracción sobre la latencia), una sola capacidad concurrente, fallback al resultado ligero útil y una salida de red SSRF-safe para toda petición iniciada por el navegador.
 
 ## Technical Context
 
@@ -22,7 +22,7 @@ La importación conservará HTML crudo → texto → IA como primer intento. Cua
 
 **Project Type**: Monorepo web con `backend/`, `frontend/` y `e2e/`; ampliación backend/integración que conserva `/importar`.
 
-**Performance Goals**: Resultado en <=45 s por URL. Límite global: ruta ligera <=12 s, render/interacción/snapshot <=22 s, IA del DOM <=10 s y 1 s de margen; toda operación respeta además el tiempo global restante. El tope de 12 s de la ruta ligera reserva tiempo para el render **solo cuando el render está disponible y puede entrar en juego**; si el render está deshabilitado o no disponible (FR-011), o la fuente es estática y ya produce >=1 sesión (short-circuit), la ruta ligera dispone del presupuesto global completo (<=45 s), de modo que no se regresa respecto a la feature 003 (FR-010, SC-004).
+**Performance Goals**: Resultado en <=120 s por URL (2 min; se prioriza completar la extracción sobre la latencia, decisión del usuario 2026-08-14). Límite global con topes de fase orientativos (ruta ligera ~20 s, render/interacción/snapshot ~60 s) y, como última fase, la IA sobre el DOM usa el presupuesto restante (se reserva un suelo capándose antes el render, pero la IA no se limita a un tope fijo para no abortar agendas grandes con budget disponible). Cada operación respeta además el tiempo global restante. El tope de 12 s de la ruta ligera reserva tiempo para el render **solo cuando el render está disponible y puede entrar en juego**; si el render está deshabilitado o no disponible (FR-011), o la fuente es estática y ya produce >=1 sesión (short-circuit), la ruta ligera dispone del presupuesto global completo (<=45 s), de modo que no se regresa respecto a la feature 003 (FR-010, SC-004).
 
 **Constraints**:
 

@@ -24,7 +24,7 @@ La feature reutiliza `Evento`, `Sesion`, `Ponente`, `EmpresaParticipante`, `Dato
 
 | Campo | Tipo | Regla |
 |---|---|---|
-| `deadline` | `number` | Marca temporal absoluta creada al iniciar la importación; total <=45 s. |
+| `deadline` | `number` | Marca temporal absoluta creada al iniciar la importación; total <=120 s. |
 | `fase` | `ligera \| render \| ia_renderizada` | Cada fase usa el mínimo entre su tope y el tiempo restante. |
 
 ## Relaciones y selección

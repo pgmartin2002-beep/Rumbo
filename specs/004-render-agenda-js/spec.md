@@ -37,6 +37,10 @@ la feature 003."
   → A: Escalar cuando la vía ligera no extrae ninguna sesión (0 sesiones), tanto si resulta
   ilegible (no devuelve nada — el caso actual del error "No hemos podido extraer datos") como si
   obtiene nombre/fechas pero sin agenda; si ya extrae al menos una sesión, no se renderiza.
+- Q: Tras probar con webs reales, el límite de 45 s cortaba la extracción de agendas grandes
+  (render + IA) antes de terminar. ¿Priorizamos completar la extracción aunque tarde más? → A: Sí;
+  se sube el presupuesto total a 120 s (2 min). Se prioriza obtener el borrador sobre la latencia;
+  la optimización de rendimiento queda para más adelante.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -169,7 +173,7 @@ ya contiene la agenda sigue creando el evento igual que antes, sin invocar el re
   de red que origine la página renderizada DEBE filtrarse de modo que solo pueda alcanzar
   destinos públicos, bloqueando destinos internos, privados y de metadatos de nube, aun cuando el
   JavaScript de la página lo intente.
-- **FR-008**: El sistema DEBE aplicar un límite de tiempo total de 45 segundos (obtención +
+- **FR-008**: El sistema DEBE aplicar un límite de tiempo total de 120 segundos (obtención +
   render + extracción) y un límite de recursos; superado cualquiera, la importación se trata como
   fallo recuperable ("fuente ilegible") sin crear datos parciales.
 - **FR-009**: El sistema NO DEBE exponer al cliente ni las credenciales del motor de IA ni el
@@ -207,7 +211,7 @@ ya contiene la agenda sigue creando el evento igual que antes, sin invocar el re
 - **SC-002**: El 100% de los intentos que no se pueden extraer (incluidos los que superan el
   límite de tiempo o de recursos) terminan en estado de "fuente ilegible" con acciones de
   recuperación, sin crear eventos vacíos ni mostrar errores genéricos.
-- **SC-003**: La importación desde URL devuelve un resultado (éxito o fallo controlado) en 45
+- **SC-003**: La importación desde URL devuelve un resultado (éxito o fallo controlado) en 120
   segundos o menos, sin dejar al usuario esperando indefinidamente.
 - **SC-004**: La importación de datos ya estructurados y de URLs server-rendered que ya
   funcionaban sigue comportándose exactamente igual que antes (sin regresiones en las pruebas de
@@ -231,6 +235,6 @@ ya contiene la agenda sigue creando el evento igual que antes, sin invocar el re
   MVP y se controlan mediante límites de tiempo y de recursos.
 - El seguimiento de enlaces internos y la paginación completa más allá de la profundidad acotada
   de interacción quedan fuera del MVP.
-- Las decisiones de límite de tiempo total (45 s), profundidad de interacción (cookies + días +
+- Las decisiones de límite de tiempo total (120 s), profundidad de interacción (cookies + días +
   scroll/"ver más" acotado) y mecanismo de seguridad del render (filtrado del tráfico a destinos
   públicos) quedaron fijadas en la sesión de clarificación 2026-08-14.

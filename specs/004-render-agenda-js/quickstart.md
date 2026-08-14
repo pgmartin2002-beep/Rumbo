@@ -23,7 +23,7 @@ El entorno de despliegue debe instalar Chromium de la misma versión que `backen
 2. Inyecta un motor de IA fake que transforme el DOM de la fixture en un evento con sesiones.
 3. Importa su URL por `POST /api/events/import`.
 
-**Esperado**: el camino ligero obtiene 0 sesiones, se invoca una sola vez el render, se revelan las sesiones y la respuesta es `201` con al menos una sesión. El total es <=45 s.
+**Esperado**: el camino ligero obtiene 0 sesiones, se invoca una sola vez el render, se revelan las sesiones y la respuesta es `201` con al menos una sesión. El total es <=120 s.
 
 ## Escenario 2 — Sin regresión del camino ligero (US3)
 
